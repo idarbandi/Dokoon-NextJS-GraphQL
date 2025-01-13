@@ -86,7 +86,7 @@ export default function Header({data}) {
       <AppBar position="static" elevation={0} className={classes.appbarMain}>
       <Container maxWidth="lg">
         <Toolbar className={classes.toolbarMain}>
-        <Link href={`/`}>
+        <Link legacyBehavior href={`/`}>
               <a>
           <svg
             className={classes.svg}
@@ -115,7 +115,7 @@ export default function Header({data}) {
             <List className={classes.menuList}>
             {data.map((category) => (
               <ListItem key={category.name} className={classes.menuListItem}>
-                <Link href={`/category/${encodeURIComponent(category.slug)}`}><a className={classes.listItemLink}>{category.name}</a></Link>
+                <Link legacyBehavior href={`/category/${encodeURIComponent(category.slug)}`}><a className={classes.listItemLink}>{category.name}</a></Link>
               </ListItem>
               ))}
             </List>
