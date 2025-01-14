@@ -125,7 +125,7 @@ class ProductSpecificationValue(models.Model):
 
 class ProductImage(models.Model):
     product = models.ForeignKey(
-        Product, on_delete=models.CASCADE, verbose_name=_("product_image"))
+        Product, on_delete=models.CASCADE, related_name=_("product_image"))
     image = models.ImageField(verbose_name=_('image'),
                               help_text=_("Upload a Products Image"),
                               upload_to="images/",
