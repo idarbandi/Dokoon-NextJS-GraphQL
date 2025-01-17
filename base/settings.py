@@ -20,9 +20,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "corsheaders",
     'store',
     'account',
-    "corsheaders",
     'mptt',
     "rest_framework",
 ]
@@ -38,12 +38,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',
-    'http://127.0.0.1:3000'
-]
-
-
 CORS_EXPOSE_HEADERS = [
     'Content-Type', 'X-CSRFToken'
 ]
@@ -52,6 +46,21 @@ CSRF_COOKIE_SAMESITE = 'Lax'
 SESSION_COOKIE_SAMESITE = 'Lax'
 CSRF_COOKIE_HTTPONLY = True
 SESSION_COOKIE_HTTPONLY = True
+
+
+CORS_ORIGIN_WHITELIST = (
+    'http://localhost:3000',     # for localhost (REACT Default)
+    'http://127.0.0.1:3000',     # for network
+    'http://localhost:8080',     # for localhost (Developlemt)
+    'http://192.168.0.50:8080',  # for network (Development)
+)
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:3000',     # for localhost (REACT Default)
+    'http://192.168.0.50:3000',  # for network
+    'http://localhost:8080',     # for localhost (Developlemt)
+    'http://192.168.0.50:8080',  # for network (Development)
+]
 
 
 ROOT_URLCONF = 'base.urls'
