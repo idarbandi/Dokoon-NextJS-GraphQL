@@ -12,6 +12,8 @@ import LockOpenOutlined, { LocalActivityOutlined } from '@material-ui/icons';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { makeStyles } from '@material-ui/core';
+import Box from '@mui/material/Box';
+import Alert from '@mui/material/Alert';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -20,6 +22,8 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     alignItems: 'center',
   },
+  errorContainer: { marginTop: 20, marginBottom: 20 },
+  errorAlert: { backgroundColor: '#f44336' },
   avatar: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main,
@@ -37,6 +41,7 @@ const Login = forwardRef((props, ref) => {
   const classes = useStyles();
   const [csrfToken, setCsrfToken] = useState('');
   const [userName, setUserName] = useState('');
+  const [error, setError] = useState('');
   const [password, setPassword] = useState('');
 
   useEffect(() => {
@@ -48,7 +53,7 @@ const Login = forwardRef((props, ref) => {
         setCsrfToken(csrfToken);
       })
       .catch((err) => {
-        alert(err);
+        setError(err);
       });
   }, []);
 
@@ -67,11 +72,11 @@ const Login = forwardRef((props, ref) => {
         if (response.ok) {
           console.log(response);
         } else {
-          throw new Error('Could Not Connect To The Server Correctly');
+          setError('Could Not Connect To The Server Correctly');
         }
       })
       .catch((err) => {
-        alert(err);
+        setError(err);
       });
   };
 
@@ -79,8 +84,17 @@ const Login = forwardRef((props, ref) => {
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
+        <Box className={classes.errorContainer}>
+          {' '}
+          {error && (
+            <Alert severity="error" className={classes.errorAlert}>
+              {' '}
+              {error}{' '}
+            </Alert>
+          )}{' '}
+        </Box>
         <Avatar className={classes.avatar}>
-          <LocalActivityOutlined/>
+          <LocalActivityOutlined />
         </Avatar>
         <Typography component="h1" variant="h5">
           Sign In
