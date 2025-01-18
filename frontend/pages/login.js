@@ -2,6 +2,7 @@ import React, { useState, useEffect, forwardRef } from 'react';
 
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
+import Router from 'next/router';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -71,6 +72,7 @@ const Login = forwardRef((props, ref) => {
       .then((response) => {
         if (response.ok) {
           console.log(response);
+          Router.push('/dashboard');
         } else {
           setError('Could Not Connect To The Server Correctly');
         }
