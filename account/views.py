@@ -38,8 +38,8 @@ def Login_view(request):
 
 
 class who_am_i_view(APIView):
-    authentication_classes = (SessionAuthentication,)
-    permission_classes = (IsAuthenticated,)
+    authentication_classes = [SessionAuthentication]
+    permission_classes = [IsAuthenticated]
 
     @staticmethod
     def get(request, format=None):

@@ -99,14 +99,13 @@ function DashboardContent() {
   const userAvatar = 'avatar1.jpg'; // Replace with actual user avatar URL
 
   React.useEffect(() => {
-    fetch('http://127.0.0.1:8000/account/whoami/', {
-      credentials: 'include',
-      method: 'GET',
+    fetch('http://localhost:8000/account/whoami/', {
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
     })
-      .then((response) => response.json())
+      .then(response => response.json())
       .then((data) => {
         console.log(data);
         setWhoAmI(data.username);
