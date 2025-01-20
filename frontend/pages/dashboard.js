@@ -1,3 +1,13 @@
+/** ********************************************************************************
+ * Dokoon Project
+ * Author: Idarbandi
+ * GitHub: https://github.com/idarbandi/Dokoon-NextDRF
+ * Email: darbandidr99@gmail.com
+ *
+ * This project was developed by Idarbandi.
+ * We hope you find it useful! Contributions and feedback are welcome.
+ * ****************************************************************************** */
+
 import * as React from 'react';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
@@ -85,7 +95,7 @@ function DashboardContent() {
   };
 
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [whoAmI, setWhoAmI] = React.useState('Not Sure');
+  const [whoAmI, setWhoAmI] = React.useState('ناشناخته');
   const [error, setError] = React.useState('');
   const openMenu = Boolean(anchorEl);
   const handleMenuClick = (event) => {
@@ -95,8 +105,8 @@ function DashboardContent() {
     setAnchorEl(null);
   };
 
-  const userName = 'User Name'; // Replace with actual user data
-  const userAvatar = 'avatar1.jpg'; // Replace with actual user avatar URL
+  const userName = 'نام کاربری';
+  const userAvatar = 'avatar1.jpg';
 
   React.useEffect(() => {
     fetch('http://localhost:8000/account/whoami/', {
@@ -105,7 +115,7 @@ function DashboardContent() {
       },
       credentials: 'include',
     })
-      .then(response => response.json())
+      .then((response) => response.json())
       .then((data) => {
         console.log(data);
         setWhoAmI(data.username);
@@ -133,12 +143,10 @@ function DashboardContent() {
               <MenuIcon />
             </IconButton>
             <Typography component="h1" variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
-              Dashboard
+              داشبورد
             </Typography>
 
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              {' '}
-              {/* Profile Section */}
               <Typography variant="body1">{whoAmI}</Typography>
               <IconButton onClick={handleMenuClick}>
                 <Avatar alt={userName} src={userAvatar} />
@@ -152,8 +160,8 @@ function DashboardContent() {
                   'aria-labelledby': 'basic-button',
                 }}
               >
-                <MenuItem onClick={handleCloseMenu}>Profile</MenuItem>
-                <MenuItem onClick={handleCloseMenu}>Logout</MenuItem>
+                <MenuItem onClick={handleCloseMenu}>پروفایل</MenuItem>
+                <MenuItem onClick={handleCloseMenu}>خروج</MenuItem>
               </Menu>
             </Box>
           </Toolbar>
@@ -176,19 +184,19 @@ function DashboardContent() {
               <ListItemIcon>
                 <DashboardIcon />
               </ListItemIcon>
-              <ListItemText primary="Dashboard" />
+              <ListItemText primary="داشبورد" />
             </ListItemButton>
             <ListItemButton>
               <ListItemIcon>
                 <BarChartIcon />
               </ListItemIcon>
-              <ListItemText primary="Reports" />
+              <ListItemText primary="گزارشات" />
             </ListItemButton>
             <ListItemButton>
               <ListItemIcon>
                 <SettingsIcon />
               </ListItemIcon>
-              <ListItemText primary="Settings" />
+              <ListItemText primary="تنظیمات" />
             </ListItemButton>
           </List>
         </DrawerStyled>

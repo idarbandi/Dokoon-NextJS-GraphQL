@@ -1,18 +1,38 @@
+"""********************************************************************************
+ * Dokoon Project
+ * Author: Idarbandi
+ * GitHub: https://github.com/idarbandi/Dokoon-NextDRF
+ * Email: darbandidr99@gmail.com
+ *
+ * This project was developed by Idarbandi.
+ * We hope you find it useful! Contributions and feedback are welcome.
+ *********************************************************************************
+
+"""
+
+# این فایل تنظیمات اصلی پروژه دکوون را تعریف می‌کند.
+# (This file defines the base settings for the Dokoon project.)
+
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# مسیرهای ساخت پروژه به این صورت ساخته می‌شوند: BASE_DIR / 'subdir'.
+# (Build paths inside the project like this: BASE_DIR / 'subdir'.)
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# کلید مخفی برای مدیریت نشست‌ها و سایر موارد امنیتی. این را مخفی نگه دارید!
+# (Secret key for session management and other security purposes. Keep this secret!)
 SECRET_KEY = 'django-insecure-@$xjnk6_9@=rz517qu4s)$hy2nhs0hh%qxqeb8kgyavb5lpp-w'
 
-# SECURITY WARNING: don't run with debug turned on in production!
+# هشدار امنیتی: حالت اشکال‌زدایی را در محیط تولید فعال نکنید!
+# (SECURITY WARNING: Don't enable debug mode in production!)
 DEBUG = True
 
+# هاست‌های مجاز برای محیط توسعه
+# (Allowed hosts for the development environment)
 ALLOWED_HOSTS = []
 
-
-# Application definition
-
+# برنامه‌های نصب شده
+# (Applications to install)
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -27,6 +47,8 @@ INSTALLED_APPS = [
     "rest_framework",
 ]
 
+# میان‌افزار برای مدیریت درخواست‌ها و پاسخ‌ها
+# (Middleware for handling requests and responses)
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -38,6 +60,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# تنظیمات CORS برای اشتراک منابع بین دامنه‌ای
+# (CORS settings for cross-origin resource sharing)
 CORS_EXPOSE_HEADERS = [
     'Content-Type', 'X-CSRFToken'
 ]
@@ -47,24 +71,26 @@ SESSION_COOKIE_SAMESITE = 'Lax'
 CSRF_COOKIE_HTTPONLY = True
 SESSION_COOKIE_HTTPONLY = True
 
-
 CORS_ORIGIN_WHITELIST = (
-    'http://localhost:3000',     # for localhost (REACT Default)
-    'http://127.0.0.1:3000',     # for network
-    'http://localhost:8080',     # for localhost (Developlemt)
-    'http://192.168.0.50:8080',  # for network (Development)
+    'http://localhost:3000',  # برای لوکال هاست (پیش‌فرض React)
+    'http://127.0.0.1:3000',  # برای شبکه
+    'http://localhost:8080',  # برای لوکال هاست (توسعه)
+    'http://192.168.0.50:8080',  # برای شبکه (توسعه)
 )
 
 CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:3000',     # for localhost (REACT Default)
-    'http://192.168.0.50:3000',  # for network
-    'http://localhost:8080',     # for localhost (Developlemt)
-    'http://192.168.0.50:8080',  # for network (Development)
+    'http://localhost:3000',  # برای لوکال هاست (پیش‌فرض React)
+    'http://192.168.0.50:3000',  # برای شبکه
+    'http://localhost:8080',  # برای لوکال هاست (توسعه)
+    'http://192.168.0.50:8080',  # برای شبکه (توسعه)
 ]
 
-
+# تنظیمات URL ریشه برای مسیریابی درخواست‌ها
+# (Root URLconf for routing requests)
 ROOT_URLCONF = 'base.urls'
 
+# قالب‌ها برای رندر کردن صفحات HTML
+# (Templates for rendering HTML pages)
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -81,12 +107,12 @@ TEMPLATES = [
     },
 ]
 
+# برنامه WSGI برای مدیریت درخواست‌های سرور وب
+# (WSGI application for handling web server requests)
 WSGI_APPLICATION = 'base.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
+# تنظیمات پایگاه داده (در حال حاضر از SQLite برای توسعه استفاده می‌شود)
+# (Database configuration (currently using SQLite for development))
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -95,6 +121,8 @@ DATABASES = {
 }
 
 if not DEBUG:
+    # تنظیمات پایگاه داده برای محیط تولید (PostgreSQL)
+    # (Database settings for production environment (PostgreSQL))
     DATABASES['default'] = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'your_postgres_db_name',
@@ -104,10 +132,8 @@ if not DEBUG:
         'PORT': 'your_postgres_port',
     }
 
-
-# Password validation
-# https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
-
+# اعتبارسنجی رمز عبور
+# (Password validation)
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -123,22 +149,17 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/5.1/topics/i18n/
-
+# تنظیمات بین‌المللی‌سازی
+# (Internationalization settings)
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
-
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
-
+# فایل‌های استاتیک (CSS، جاوااسکریپت، تصاویر)
+# (Static files (CSS, JavaScript, Images))
 STATIC_URL = "/static/"
 STATIC_ROOT = "static/"
 
@@ -147,7 +168,8 @@ MEDIA_ROOT = BASE_DIR / "media/"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
+# تنظیمات Rest Framework
+# (Rest Framework settings)
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"

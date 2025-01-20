@@ -1,14 +1,13 @@
+/* Dokoon Project - Global Styles */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #121212; /* Dark background as in the theme */
+  --foreground: #FFFFFF; /* White foreground for contrast */
+  --primary-color: #FF5733; /* Match the theme's primary */
+  --secondary-color: #00BCD4; /* Match the theme's secondary */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* No need for prefers-color-scheme media query as we are using a dark theme by default */
 
 html,
 body {
@@ -19,9 +18,10 @@ body {
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif; /* Consistent font stack */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  direction: rtl; /* Right-to-left for Persian */
 }
 
 * {
@@ -31,12 +31,25 @@ body {
 }
 
 a {
-  color: inherit;
+  color: var(--primary-color); /* Use primary color for links */
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+/* Styles for specific elements to match the theme */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--foreground); /* Ensure headings are white */
+}
+
+/* Example: Styling for buttons to match the theme */
+button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+button:hover{
+    background-color: var(--primary-color-light);
 }

@@ -1,3 +1,13 @@
+/** ********************************************************************************
+ * Dokoon Project
+ * Author: Idarbandi
+ * GitHub: https://github.com/idarbandi/Dokoon-NextDRF
+ * Email: darbandidr99@gmail.com
+ *
+ * This project was developed by Idarbandi.
+ * We hope you find it useful! Contributions and feedback are welcome.
+ * ****************************************************************************** */
+
 import React, { useRef, useEffect, forwardRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -6,7 +16,8 @@ import Container from '@material-ui/core/Container';
 import List from '@material-ui/core/List';
 import Link from 'next/link';
 
-const useStyles = makeStyles((theme) => ({
+// استایل‌های کامپوننت هدر
+const useDokoonStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
   },
@@ -65,17 +76,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const CustomListItem = forwardRef((props, ref) => {
+// کامپوننت سفارشی برای آیتم‌های لیست منو
+const DokoonListItem = forwardRef((props, ref) => { // Renamed to DokoonListItem
   return <li ref={ref} {...props} />;
 });
 
+// کامپوننت اصلی هدر
 export default function Header({ data }) {
-  const classes = useStyles();
+  const classes = useDokoonStyles();
   const listItemRef = useRef();
 
   useEffect(() => {
+    // اگر رفرنس آیتم لیست وجود داشته باشد، در اینجا می‌توانیم با DOM کار کنیم
     if (listItemRef.current) {
-      // Perform DOM manipulation using listItemRef
       console.log(listItemRef.current);
     }
   }, [listItemRef]);
@@ -113,11 +126,11 @@ export default function Header({ data }) {
           <Toolbar className={classes.toolbarSecondary}>
             <List className={classes.menuList}>
               {data.map((category) => (
-                <CustomListItem key={category.name} className={classes.menuListItem} ref={listItemRef}>
+                <DokoonListItem key={category.name} className={classes.menuListItem} ref={listItemRef}> {/* Using DokoonListItem */}
                   <Link href={`/category/${encodeURIComponent(category.slug)}`} passHref legacyBehavior>
                     <a className={classes.listItemLink}>{category.name}</a>
                   </Link>
-                </CustomListItem>
+                </DokoonListItem>
               ))}
             </List>
           </Toolbar>

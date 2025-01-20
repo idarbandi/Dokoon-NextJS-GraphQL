@@ -1,54 +1,68 @@
-import Head from "next/head";
-import { useRouter } from "next/router";
-import Header from "../../components/header";
-import Container from "@material-ui/core/Container";
-import { makeStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
-import Grid from "@material-ui/core/Grid";
-import Box from "@material-ui/core/Box";
-import Hidden from "@material-ui/core/Hidden";
+/** ********************************************************************************
+ * Dokoon Project
+ * Author: Idarbandi
+ * GitHub: https://github.com/idarbandi/Dokoon-NextDRF
+ * Email: darbandidr99@gmail.com
+ *
+ * This project was developed by Idarbandi.
+ * We hope you find it useful! Contributions and feedback are welcome.
+ * ****************************************************************************** */
 
-const useStyles = makeStyles((theme) => ({
+import Head from 'next/head';
+import { useRouter } from 'next/router';
+import Header from '../../components/header';
+import Container from '@material-ui/core/Container';
+import { makeStyles } from '@material-ui/core/styles';
+import Paper from '@material-ui/core/Paper';
+import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
+import Hidden from '@material-ui/core/Hidden';
+
+// استایل‌های این صفحه (با نام Dokoon)
+const useDokoonProductStyles = makeStyles((theme) => ({
+  // Prefixed styles
   root: {
     flexGrow: 1,
   },
   paper: {
     padding: theme.spacing(0),
-    borderRadius: "0",
+    borderRadius: '0',
   },
-  paperImagePreview:{
-    paddingTop: 30
+  paperImagePreview: {
+    paddingTop: theme.spacing(3),
   },
   paperImage: {
     padding: theme.spacing(0),
-    borderRadius: "0",
+    borderRadius: '0',
     marginLeft: 25,
-    ["@media (max-width:600px)"]: {
+    marginRight: 25,
+    ['@media (max-width:600px)']: {
       marginLeft: -20,
       marginRight: -20,
     },
   },
   paperRight: {
     padding: theme.spacing(0),
-    borderRadius: "0",
+    borderRadius: '0',
     paddingLeft: 40,
-    paddingTop: 30,
-    ["@media (max-width:600px)"]: {
+    paddingTop: theme.spacing(3),
+    ['@media (max-width:600px)']: {
       paddingLeft: 0,
       paddingTop: 10,
     },
   },
   img: {
-    maxWidth: "100%",
+    maxWidth: '100%',
   },
 }));
 
-function Product({post, categories}) {
-  const classes = useStyles();
+// کامپوننت صفحه محصول
+function ProductPage({ post, categories }) {
+  const classes = useDokoonProductStyles(); // Using prefixed styles
   const router = useRouter();
 
   if (router.isFallback) {
-    return <div>Loading...</div>;
+    return <div>در حال بارگذاری...</div>;
   }
 
   return (
@@ -56,31 +70,38 @@ function Product({post, categories}) {
       <Head>
         <title>{post.title}</title>
       </Head>
-      <Header data={categories}/>
+      <Header data={categories} />
       <Container maxWidth="md">
         <Grid container spacing={0}>
-          <Hidden only={["xs", "sm"]}>
+          <Hidden only={['xs', 'sm']}>
             <Grid item sm={1}>
               <Paper className={classes.paperImagePreview} elevation={0}>
-                {post.product_image.map((c) => (
-                  <div key={c.id}>
-                    <Paper className={classes.paperImage} elevation={0}>
-                      <img
-                        src={post.product_image[0].image}
-                        alt={post.product_image[0].alt_text}
-                        className={classes.img}
-                      />
-                    </Paper>
-                  </div>
-                ))}
+                {post.product_image?.map(
+                  (
+                    c,
+                    index // Added index for key
+                  ) => (
+                    <div key={c.id || index}>
+                      {' '}
+                      {/* Improved key handling */}
+                      <Paper className={classes.paperImage} elevation={0}>
+                        <img
+                          src={c.image} // Use the correct image path
+                          alt={c.alt_text || 'تصویر محصول'}
+                          className={classes.img}
+                        />
+                      </Paper>
+                    </div>
+                  )
+                )}
               </Paper>
             </Grid>
           </Hidden>
           <Grid item xs={12} sm={6}>
             <Paper className={classes.paperImage} elevation={0}>
               <img
-                src={post.product_image[0].image}
-                alt={post.product_image[0].alt_text}
+                src={post.product_image?.[0]?.image} // Safe navigation
+                alt={post.product_image?.[0]?.alt_text || 'تصویر اصلی محصول'} // Safe navigation and Persian default
                 className={classes.img}
               />
             </Paper>
@@ -94,7 +115,7 @@ function Product({post, categories}) {
                 £{post.regular_price}
               </Box>
               <Box component="p" m={0} fontSize={14}>
-                Free Delivery & Returns (Ts&Cs apply)
+                ارسال و برگشت رایگان (شرایط اعمال می شود)
               </Box>
             </Paper>
           </Grid>
@@ -104,29 +125,47 @@ function Product({post, categories}) {
   );
 }
 
-export async function getStaticPaths(){
-  return{
-    paths: [{params: { slug: "boots-3" } }],
-    fallback: true,
-  };
+export async function getStaticPaths() {
+  try {
+    const res = await fetch(`http://127.0.0.1:8000/api/محصولات/`);
+    const products = await res.json();
+    const paths = products.map((product) => ({
+      params: { slug: product.slug },
+    }));
+    return {
+      paths,
+      fallback: true,
+    };
+  } catch (error) {
+    console.error('Error fetching paths:', error);
+    return { paths: [], fallback: true };
+  }
 }
 
 export async function getStaticProps({ params }) {
+  try {
+    const res = await fetch(`http://127.0.0.1:8000/api/محصول/${params.slug}/`); // Correct API endpoint
+    const post = await res.json();
 
-  const res = await fetch(`http://127.0.0.1:8000/api/${params.slug}`);
-  const post = await res.json();
+    const ress = await fetch('http://127.0.0.1:8000/api/دسته-بندی‌ها/');
+    const categories = await ress.json();
 
-  const ress = await fetch("http://127.0.0.1:8000/api/category/");
-  const categories = await ress.json();
-
-
-  return{
-    props: {
-      post,
-      categories,
-    },
-  };
-
+    return {
+      props: {
+        post,
+        categories,
+      },
+      revalidate: 10,
+    };
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    return {
+      props: {
+        post: null, // Important: Set post to null in case of error
+        categories: [],
+      },
+    };
+  }
 }
 
-export default Product;
+export default ProductPage;

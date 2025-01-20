@@ -1,3 +1,13 @@
+/** ********************************************************************************
+ * Dokoon Project
+ * Author: Idarbandi
+ * GitHub: https://github.com/idarbandi/Dokoon-NextDRF
+ * Email: darbandidr99@gmail.com
+ *
+ * This project was developed by Idarbandi.
+ * We hope you find it useful! Contributions and feedback are welcome.
+ * ****************************************************************************** */
+
 import React, { useState, useEffect, forwardRef } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -17,7 +27,8 @@ import Alert from '@mui/material/Alert';
 import { useMachine } from '@xstate/react';
 import { createMachine, assign } from 'xstate';
 
-const useStyles = makeStyles((theme) => ({
+// استایل‌های فرم ورود
+const useDokoonLoginStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
     display: 'flex',
@@ -39,6 +50,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+// ماشین وضعیت برای لاگین
 const loginMachine = createMachine(
   {
     id: 'login',
@@ -62,9 +74,9 @@ const loginMachine = createMachine(
             if (!response.ok) {
               try {
                 const errorData = await response.json();
-                throw new Error(errorData.detail || 'Login failed');
+                throw new Error(errorData.detail || 'ورود ناموفق'); // Persian Error Message
               } catch (parseError) {
-                throw new Error('Login failed: Invalid server response');
+                throw new Error('ورود ناموفق: پاسخ نامعتبر از سرور'); // Persian Error Message
               }
             }
             return response.json();
@@ -92,8 +104,9 @@ const loginMachine = createMachine(
   }
 );
 
-const login = forwardRef((props, ref) => {
-  const classes = useStyles();
+// کامپوننت فرم ورود
+const DokoonLogin = forwardRef((props, ref) => {
+  const classes = useDokoonLoginStyles();
   const router = useRouter();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -105,12 +118,12 @@ const login = forwardRef((props, ref) => {
       try {
         const res = await fetch('http://localhost:8000/account/csrf/', { credentials: 'include' });
         if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
+          throw new Error(`خطا در دریافت توکن امنیتی! وضعیت: ${res.status}`); // Persian Error Message
         }
         const token = res.headers.get('X-CSRFToken');
         setCsrfToken(token);
       } catch (err) {
-        console.error('CSRF Error:', err);
+        console.error('خطا در CSRF:', err); // Persian Error Message
       }
     };
 
@@ -136,17 +149,17 @@ const login = forwardRef((props, ref) => {
           <LocalActivityOutlined />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Sign In
+          ورود {/* Sign In in Persian */}
         </Typography>
         <form className={classes.form} onSubmit={handleSubmit} noValidate ref={ref}>
-          {state.matches('loading') && <div>Loading...</div>} {/* Loading indicator */}
+          {state.matches('loading') && <div>در حال بارگذاری...</div>} {/* Loading in Persian */}
           <TextField
             variant="outlined"
             margin="normal"
             required
             fullWidth
             id="username"
-            label="Username"
+            label="نام کاربری" // Username in Persian
             name="username"
             autoComplete="username"
             autoFocus
@@ -159,14 +172,15 @@ const login = forwardRef((props, ref) => {
             required
             fullWidth
             name="password"
-            label="Password"
+            label="رمز عبور" // Password in Persian
             type="password"
             id="password"
             autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <FormControlLabel control={<Checkbox value="remember" color="primary" />} label="Remember me" />
+          <FormControlLabel control={<Checkbox value="remember" color="primary" />} label="مرا به خاطر بسپار" />{' '}
+          {/* Remember me in Persian */}
           <Button
             type="submit"
             fullWidth
@@ -175,17 +189,17 @@ const login = forwardRef((props, ref) => {
             className={classes.submit}
             disabled={state.matches('loading') || !csrfToken}
           >
-            Sign In
+            ورود {/* Sign In in Persian */}
           </Button>
           <Grid container>
             <Grid item xs>
               <Link href="#" variant="body2">
-                Forgot Password
+                رمز عبور را فراموش کرده‌اید؟ {/* Forgot Password in Persian */}
               </Link>
             </Grid>
             <Grid item>
               <Link href="#" variant="body2">
-                Don't have an account? Sign Up
+                حساب کاربری ندارید؟ ثبت نام کنید {/* Don't have an account? Sign Up in Persian */}
               </Link>
             </Grid>
           </Grid>
@@ -195,4 +209,4 @@ const login = forwardRef((props, ref) => {
   );
 });
 
-export default login;
+export default DokoonLogin;

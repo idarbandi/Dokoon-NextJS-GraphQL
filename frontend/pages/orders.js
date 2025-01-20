@@ -1,4 +1,3 @@
-// Orders.js
 import * as React from 'react';
 import Link from '@mui/material/Link';
 import Table from '@mui/material/Table';
@@ -16,43 +15,43 @@ function createData(id, date, name, shipTo, paymentMethod, amount) {
 const rows = [
   createData(
     0,
-    '16 Mar, 2024',
-    'Elvis Presley',
-    'Tupelo, MS',
-    'VISA ⠀•••• 3719',
-    312.44,
+    '14 فروردین، 1404', // 14 Farvardin, 1404 (Solar Hijri calendar)
+    'علی رضایی', // Ali Rezaei
+    'تهران، ایران', // Tehran, Iran
+    'کارت ملی ***-****-****-1234', // National Card (replace * with actual digits)
+    1.245.000, // 1,245,000 Iranian Rials
   ),
   createData(
     1,
-    '16 Mar, 2024',
-    'Paul McCartney',
-    'London, UK',
-    'VISA ⠀•••• 2574',
-    866.99,
+    '14 فروردین، 1404',
+    'فاطمه حسینی', // Fatemeh Hosseini
+    'شیراز، ایران', // Shiraz, Iran
+    'کارت بانک ملت ****-****-****-9876', // Mellat Bank Card (replace * with actual digits)
+    7.890.000, // 7,890,000 Iranian Rials
   ),
   createData(
     2,
-    '16 Mar, 2024',
-    'Tom Scholz',
-    'Boston, MA',
-    'MC ⠀•••• 1253',
-    100.81,
+    '14 فروردین، 1404',
+    'حسن محمدی', // Hassan Mohammadi
+    'اصفهان، ایران', // Isfahan, Iran
+    'درگاه پرداخت زرین‌پال', // Zarinpal Payment Gateway
+    348.500, // 348,500 Iranian Rials
   ),
   createData(
     3,
-    '16 Mar, 2024',
-    'Michael Jackson',
-    'Gary, IN',
-    'AMEX ⠀•••• 2000',
-    654.39,
+    '13 فروردین، 1404', // 13 Farvardin, 1404
+    'زهرا احمدی', // Zahra Ahmadi
+    'مشهد، ایران', // Mashhad, Iran
+    'کارت اعتباری صادرات ****-****-****-5678', // Saderat Credit Card (replace * with actual digits)
+    2.570.000, // 2,570,000 Iranian Rials
   ),
   createData(
     4,
-    '15 Mar, 2024',
-    'Bruce Springsteen',
-    'Long Branch, NJ',
-    'VISA ⠀•••• 5912',
-    212.79,
+    '12 فروردین، 1404', // 12 Farvardin, 1404
+    'محمد حسین‌پور', // Mohammad Hosseinpour
+    'تبریز، ایران', // Tabriz, Iran
+    'کیف پول دیجی‌کالا', // Digikala Wallet
+    897.200, // 897,200 Iranian Rials
   ),
 ];
 
@@ -63,15 +62,15 @@ function preventDefault(event) {
 export default function Orders() {
   return (
     <React.Fragment>
-      <Title>Recent Orders</Title>
+      <Title>سفارش‌های اخیر</Title>
       <Table size="small">
         <TableHead>
           <TableRow>
-            <TableCell>Date</TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell>Ship To</TableCell>
-            <TableCell>Payment Method</TableCell>
-            <TableCell align="right">Sale Amount</TableCell>
+            <TableCell>تاریخ</TableCell>
+            <TableCell>نام</TableCell>
+            <TableCell>آدرس ارسال</TableCell>
+            <TableCell>روش پرداخت</TableCell>
+            <TableCell align="right">مبلغ فروش</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -81,13 +80,13 @@ export default function Orders() {
               <TableCell>{row.name}</TableCell>
               <TableCell>{row.shipTo}</TableCell>
               <TableCell>{row.paymentMethod}</TableCell>
-              <TableCell align="right">{`$${row.amount}`}</TableCell>
+              <TableCell align="right">{`${row.amount.toLocaleString('fa-IR')} ریال`}</TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
       <Link color="primary" href="#" onClick={preventDefault} sx={{ mt: 3 }}>
-        See more orders
+        مشاهده‌ی سفارش‌های بیشتر
       </Link>
     </React.Fragment>
   );

@@ -1,30 +1,15 @@
+/* Dokoon Project - Home Page Styles */
+
 .page {
-  --gray-rgb: 0, 0, 0;
-  --gray-alpha-200: rgba(var(--gray-rgb), 0.08);
-  --gray-alpha-100: rgba(var(--gray-rgb), 0.05);
-
-  --button-primary-hover: #383838;
-  --button-secondary-hover: #f2f2f2;
-
   display: grid;
-  grid-template-rows: 20px 1fr 20px;
+  grid-template-rows: auto 1fr auto; /* Use auto for header and footer heights */
   align-items: center;
   justify-items: center;
-  min-height: 100svh;
+  min-height: 100vh; /* Use vh instead of svh for better cross-browser compatibility */
   padding: 80px;
   gap: 64px;
-  font-family: var(--font-geist-sans);
-}
-
-@media (prefers-color-scheme: dark) {
-  .page {
-    --gray-rgb: 255, 255, 255;
-    --gray-alpha-200: rgba(var(--gray-rgb), 0.145);
-    --gray-alpha-100: rgba(var(--gray-rgb), 0.06);
-
-    --button-primary-hover: #ccc;
-    --button-secondary-hover: #1a1a1a;
-  }
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif; /* Consistent font stack */
+  direction: rtl; /* Right-to-left for Persian */
 }
 
 .main {
@@ -32,11 +17,12 @@
   flex-direction: column;
   gap: 32px;
   grid-row-start: 2;
+  text-align: right; /* Align text to the right */
 }
 
 .main ol {
-  font-family: var(--font-geist-mono);
-  padding-left: 0;
+  font-family: 'Roboto Mono', monospace; /* Use a monospace font */
+  padding-right: 0; /* Adjust padding for RTL */
   margin: 0;
   font-size: 14px;
   line-height: 24px;
@@ -50,7 +36,7 @@
 
 .main code {
   font-family: inherit;
-  background: var(--gray-alpha-100);
+  background-color: rgba(255, 255, 255, 0.06); /* Use rgba for transparency on dark background */
   padding: 2px 4px;
   border-radius: 4px;
   font-weight: 600;
@@ -62,68 +48,61 @@
 }
 
 .ctas a {
-  appearance: none;
-  border-radius: 128px;
-  height: 48px;
-  padding: 0 20px;
-  border: none;
-  border: 1px solid transparent;
-  transition:
-    background 0.2s,
-    color 0.2s,
-    border-color 0.2s;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  line-height: 20px;
-  font-weight: 500;
+    appearance: none;
+    border-radius: 8px; /* Match theme's button radius */
+    height: 48px;
+    padding: 0 20px;
+    border: none;
+    background-color: var(--primary-color); /* Use primary color from theme */
+    color: white;
+    transition: background-color 0.2s; /* Simplify transition */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    line-height: 20px;
+    font-weight: 500;
+    text-decoration: none;
 }
 
-a.primary {
-  background: var(--foreground);
-  color: var(--background);
-  gap: 8px;
+.ctas a:hover {
+    background-color: var(--primary-color-light); /* Use lighter primary on hover */
 }
 
-a.secondary {
-  border-color: var(--gray-alpha-200);
-  min-width: 180px;
+.ctas a.secondary {
+    background-color: var(--background);
+    color: var(--foreground);
+    border: 1px solid rgba(255, 255, 255, 0.145);
+}
+
+.ctas a.secondary:hover {
+    background-color: rgba(255, 255, 255, 0.145);
 }
 
 .footer {
   grid-row-start: 3;
   display: flex;
   gap: 24px;
+  justify-content: center; /* Center footer content */
+  margin-top: 2rem;
 }
 
 .footer a {
   display: flex;
   align-items: center;
   gap: 8px;
+  text-decoration: none;
+  color: var(--foreground);
+}
+
+.footer a:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
 }
 
 .footer img {
   flex-shrink: 0;
-}
-
-/* Enable hover only on non-touch devices */
-@media (hover: hover) and (pointer: fine) {
-  a.primary:hover {
-    background: var(--button-primary-hover);
-    border-color: transparent;
-  }
-
-  a.secondary:hover {
-    background: var(--button-secondary-hover);
-    border-color: transparent;
-  }
-
-  .footer a:hover {
-    text-decoration: underline;
-    text-underline-offset: 4px;
-  }
 }
 
 @media (max-width: 600px) {
@@ -150,7 +129,7 @@ a.secondary {
     padding: 0 16px;
   }
 
-  a.secondary {
+  .ctas a.secondary {
     min-width: auto;
   }
 
@@ -161,8 +140,6 @@ a.secondary {
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  .logo {
-    filter: invert();
-  }
+.logo {
+    filter: invert(1);
 }

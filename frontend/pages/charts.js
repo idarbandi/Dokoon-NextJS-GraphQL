@@ -3,21 +3,21 @@ import { useTheme } from '@mui/material/styles';
 import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer } from 'recharts';
 import Title from './title';
 
-// Generate Sales Data
-function createData(time, amount) {
-  return { time, amount };
+// تابع برای ایجاد داده‌ها (حالا با شهرهای ایران)
+function createData(city, amount) {
+  return { city, amount };
 }
 
-const data = [
-  createData('00:00', 0),
-  createData('03:00', 300),
-  createData('06:00', 600),
-  createData('09:00', 800),
-  createData('12:00', 1500),
-  createData('15:00', 2000),
-  createData('18:00', 2400),
-  createData('21:00', 2400),
-  createData('24:00', undefined),
+// داده‌های فروش برای شهرهای ایران
+const salesDataIran = [
+  createData('تهران', 12000),
+  createData('مشهد', 8500),
+  createData('اصفهان', 7200),
+  createData('شیراز', 6000),
+  createData('تبریز', 5500),
+  createData('اهواز', 4800),
+  createData('رشت', 3500),
+  createData('کرمان', 3000),
 ];
 
 export default function Chart() {
@@ -25,10 +25,10 @@ export default function Chart() {
 
   return (
     <React.Fragment>
-      <Title>Today</Title>
+      <Title>فروش امروز (به تومان)</Title> {/* Persian title */}
       <ResponsiveContainer>
         <LineChart
-          data={data}
+          data={salesDataIran} // Use the Iranian data
           margin={{
             top: 16,
             right: 16,
@@ -36,7 +36,8 @@ export default function Chart() {
             left: 24,
           }}
         >
-          <XAxis dataKey="time" stroke={theme.palette.text.secondary} style={theme.typography.body2} />
+          <XAxis dataKey="city" stroke={theme.palette.text.secondary} style={theme.typography.body2} />{' '}
+          {/* XAxis is now cities */}
           <YAxis stroke={theme.palette.text.secondary} style={theme.typography.body2}>
             <Label
               angle={270}
@@ -47,7 +48,7 @@ export default function Chart() {
                 ...theme.typography.body1,
               }}
             >
-              Sales ($)
+              مبلغ فروش (تومان) {/* Persian YAxis label */}
             </Label>
           </YAxis>
           <Line
