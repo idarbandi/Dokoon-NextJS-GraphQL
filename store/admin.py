@@ -7,55 +7,64 @@
  * This project was developed by Idarbandi.
  * We hope you find it useful! Contributions and feedback are welcome.
  *********************************************************************************
-
 """
-# Djangocontrib از ماژول admin کلاس admin را برای مدیریت مدل‌ها در پنل مدیریت وارد می‌کنیم.
-from django.contrib import admin
 
-# برای مدیریت مدل‌هایی که از افزونهٔ mptt استفاده می‌کنند، کلاس MPTTModelAdmin را از این ماژول وارد می‌کنیم.
+from django.contrib import admin
 from mptt.admin import MPTTModelAdmin
 
-# از فایل models.py در همین پوشه، تمام مدل‌های مرتبط با فروشگاه (دسته‌بندی، محصول، تصویر محصول، مشخصات محصول، مقدار مشخصات محصول و نوع محصول) را import می‌کنیم.
-from .models import (
-    Category,
-    Product,
-    ProductImage,
-    ProductSpecification,
-    ProductSpecificationValue,
-    ProductType,
-)
-
-# ثبت مدل Category در پنل مدیریت با امکان استفاده از قابلیت‌های mptt برای مدیریت سلسله‌مراتبی دسته‌بندی‌ها
-admin.site.register(Category, MPTTModelAdmin)
+from .models import DokoonCategory  # Corrected model name
+from .models import DokoonProduct  # Corrected model name
+from .models import DokoonProductImage  # Corrected model name
+from .models import DokoonProductSpecification  # Corrected model name
+from .models import DokoonProductSpecificationValue  # Corrected model name
+from .models import DokoonProductType  # Corrected model name
 
 
-# کلاس DokoonProductSpecificationInline برای نمایش مشخصات محصول به صورت جدولی درون صفحهٔ ویرایش نوع محصول
+# Register DokoonCategory with MPTTModelAdmin
+@admin.register(DokoonCategory)  # Corrected model name
+class DokoonCategoryAdmin(MPTTModelAdmin):  # Created a custom admin class
+    list_display = ('name', 'parent', 'is_active')  # Display relevant fields
+    list_filter = ('is_active',)  # Add filters for easier management
+    search_fields = ('name',)  # Add search field
+    prepopulated_fields = {'slug': ('name',)}  # Automatically fill slug field
+
+
+# Inline admin for Product Specifications
 class DokoonProductSpecificationInline(admin.TabularInline):
-    model = ProductSpecification
+    model = DokoonProductSpecification
+    extra = 1  # allows adding new specifications directly in the admin panel
 
 
-@admin.register(ProductType)
+@admin.register(DokoonProductType)
 class DokoonProductTypeAdmin(admin.ModelAdmin):
-    # درون این کلاس، مشخص می‌کنیم که در زمان ویرایش نوع محصول، امکان ویرایش مشخصات آن نوع محصول نیز به صورت جدولی (inline) وجود داشته باشد.
-    inlines = [
-        DokoonProductSpecificationInline,
-    ]
+    inlines = [DokoonProductSpecificationInline]
+    list_display = ('name', 'is_active')  # Display relevant fields
+    list_filter = ('is_active',)  # Add filters for easier management
+    search_fields = ('name',)  # Add search field
+
+# Inline admin for Product Images
 
 
-# کلاس DokoonProductImageInline برای نمایش تصاویر محصول به صورت جدولی درون صفحهٔ ویرایش محصول
 class DokoonProductImageInline(admin.TabularInline):
-    model = ProductImage
+    model = DokoonProductImage
+    extra = 1  # allows adding new images directly in the admin panel
 
 
-# کلاس DokoonProductSpecificationValueInline برای نمایش مقادیر مشخصات محصول به صورت چینه‌اي (stacked) درون صفحهٔ ویرایش محصول
+# Inline admin for Product Specification Values
 class DokoonProductSpecificationValueInline(admin.StackedInline):
-    model = ProductSpecificationValue
+    model = DokoonProductSpecificationValue
+    extra = 1  # allows adding new specification values directly in the admin panel
 
 
-@admin.register(Product)
+@admin.register(DokoonProduct)
 class DokoonProductAdmin(admin.ModelAdmin):
-    # درون این کلاس، مشخص می‌کنیم که در زمان ویرایش محصول، امکان ویرایش مقادیر مشخصات و تصاویر محصول به صورت جدولی (inline) وجود داشته باشد.
     inlines = [
         DokoonProductSpecificationValueInline,
-        DokoonProductImageInline
+        DokoonProductImageInline,
     ]
+    list_display = ('title', 'category', 'regular_price',
+                    'is_active')  # More fields for overview
+    # Filters for easier management
+    list_filter = ('category', 'is_active', 'product_type')
+    search_fields = ('title', 'description')  # Add search fields
+    prepopulated_fields = {'slug': ('title',)}  # Automatically fill slug field

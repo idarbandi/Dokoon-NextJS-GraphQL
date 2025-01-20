@@ -26,5 +26,6 @@ urlpatterns = [
     # آدرس مربوط به صفحهٔ ورود
     path("login/", views.Login_view, name="api_login"),
     # آدرس مربوط به نمایش اطلاعات کاربر فعلی (whoami) که توسط یک کلاس view مدیریت می‌شه.
-    path("whoami/", views.who_am_i_view.as_view(), name="whoami")
+    path("whoami/", views.who_am_i_view.as_view(), name="whoami"),
+    path('logout/', views.Logout_view, name='api_logout'),
 ]
