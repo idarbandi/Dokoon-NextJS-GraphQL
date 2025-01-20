@@ -15,9 +15,11 @@
     "@material-ui/icons": "^4.11.3",
     "@mui/icons-material": "^6.4.0",
     "@mui/material": "^6.4.0",
+    "@xstate/react": "^5.0.2",
     "next": "15.1.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "recharts": "^2.15.0"
+    "recharts": "^2.15.0",
+    "xstate": "^5.19.2"
   }
 }
