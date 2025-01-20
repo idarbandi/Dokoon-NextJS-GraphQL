@@ -40,11 +40,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # Third Party Apps
     "corsheaders",
-    'store',
-    'account',
     'mptt',
     "rest_framework",
+    # Internal Apps
+    'store',
+    'account',
 ]
 
 # میان‌افزار برای مدیریت درخواست‌ها و پاسخ‌ها
