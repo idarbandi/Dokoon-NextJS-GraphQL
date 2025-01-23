@@ -13,46 +13,11 @@ function createData(id, date, name, shipTo, paymentMethod, amount) {
 }
 
 const rows = [
-  createData(
-    0,
-    '14 فروردین، 1404', // 14 Farvardin, 1404 (Solar Hijri calendar)
-    'علی رضایی', // Ali Rezaei
-    'تهران، ایران', // Tehran, Iran
-    'کارت ملی ***-****-****-1234', // National Card (replace * with actual digits)
-    1.245.000, // 1,245,000 Iranian Rials
-  ),
-  createData(
-    1,
-    '14 فروردین، 1404',
-    'فاطمه حسینی', // Fatemeh Hosseini
-    'شیراز، ایران', // Shiraz, Iran
-    'کارت بانک ملت ****-****-****-9876', // Mellat Bank Card (replace * with actual digits)
-    7.890.000, // 7,890,000 Iranian Rials
-  ),
-  createData(
-    2,
-    '14 فروردین، 1404',
-    'حسن محمدی', // Hassan Mohammadi
-    'اصفهان، ایران', // Isfahan, Iran
-    'درگاه پرداخت زرین‌پال', // Zarinpal Payment Gateway
-    348.500, // 348,500 Iranian Rials
-  ),
-  createData(
-    3,
-    '13 فروردین، 1404', // 13 Farvardin, 1404
-    'زهرا احمدی', // Zahra Ahmadi
-    'مشهد، ایران', // Mashhad, Iran
-    'کارت اعتباری صادرات ****-****-****-5678', // Saderat Credit Card (replace * with actual digits)
-    2.570.000, // 2,570,000 Iranian Rials
-  ),
-  createData(
-    4,
-    '12 فروردین، 1404', // 12 Farvardin, 1404
-    'محمد حسین‌پور', // Mohammad Hosseinpour
-    'تبریز، ایران', // Tabriz, Iran
-    'کیف پول دیجی‌کالا', // Digikala Wallet
-    897.200, // 897,200 Iranian Rials
-  ),
+  createData(0, '14 فروردین، 1404', 'علی رضایی', 'تهران، ایران', 'کارت ملی ***-****-****-1234', 1245000),
+  createData(1, '14 فروردین، 1404', 'فاطمه حسینی', 'شیراز، ایران', 'کارت بانک ملت ****-****-****-9876', 7890000),
+  createData(2, '14 فروردین، 1404', 'حسن محمدی', 'اصفهان، ایران', 'درگاه پرداخت زرین‌پال', 348500),
+  createData(3, '13 فروردین، 1404', 'زهرا احمدی', 'مشهد، ایران', 'کارت اعتباری صادرات ****-****-****-5678', 2570000),
+  createData(4, '12 فروردین، 1404', 'محمد حسین‌پور', 'تبریز، ایران', 'کیف پول دیجی‌کالا', 897200),
 ];
 
 function preventDefault(event) {

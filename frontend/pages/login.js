@@ -1,34 +1,24 @@
-/** ********************************************************************************
- * Dokoon Project
- * Author: Idarbandi
- * GitHub: https://github.com/idarbandi/Dokoon-NextDRF
- * Email: darbandidr99@gmail.com
- *
- * This project was developed by Idarbandi.
- * We hope you find it useful! Contributions and feedback are welcome.
- * ****************************************************************************** */
-
 import React, { useState, useEffect, forwardRef } from 'react';
+
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
-import { useRouter } from 'next/router';
+import Router from 'next/router';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
-import { LocalActivityOutlined } from '@material-ui/icons';
+import LockOpenOutlined, { LocalActivityOutlined } from '@material-ui/icons';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import { useMachine } from '@xstate/react';
+import authMachine from './authMachine';
 import { makeStyles } from '@material-ui/core';
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
-import { useMachine } from '@xstate/react';
-import { createMachine, assign } from 'xstate';
 
-// استایل‌های فرم ورود
-const useDokoonLoginStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
     display: 'flex',
@@ -42,7 +32,7 @@ const useDokoonLoginStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.secondary.main,
   },
   form: {
-    width: '100%',
+    width: '100%', // Fix IE 11 issue.
     marginTop: theme.spacing(1),
   },
   submit: {
@@ -50,92 +40,50 @@ const useDokoonLoginStyles = makeStyles((theme) => ({
   },
 }));
 
-// ماشین وضعیت برای لاگین
-const loginMachine = createMachine(
-  {
-    id: 'login',
-    initial: 'idle',
-    context: { error: null },
-    states: {
-      idle: { on: { SUBMIT: 'loading' } },
-      loading: {
-        invoke: {
-          id: 'loginRequest',
-          src: async (context, event) => {
-            const response = await fetch('http://localhost:8000/account/login/', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': event.csrfToken,
-              },
-              credentials: 'include',
-              body: JSON.stringify({ username: event.username, password: event.password }),
-            });
-            if (!response.ok) {
-              try {
-                const errorData = await response.json();
-                throw new Error(errorData.detail || 'ورود ناموفق'); // Persian Error Message
-              } catch (parseError) {
-                throw new Error('ورود ناموفق: پاسخ نامعتبر از سرور'); // Persian Error Message
-              }
-            }
-            return response.json();
-          },
-          onDone: { target: 'success' },
-          onError: { target: 'failure', actions: 'assignError' },
-        },
-      },
-      success: {
-        entry: 'redirectToDashboard',
-        type: 'final',
-      },
-      failure: { on: { SUBMIT: 'loading' } },
-    },
-  },
-  {
-    actions: {
-      assignError: assign({ error: (context, event) => event.data.message }),
-      redirectToDashboard: () => {
-        if (typeof window !== 'undefined') {
-          router.push('/dashboard');
-        }
-      },
-    },
-  }
-);
-
-// کامپوننت فرم ورود
-const DokoonLogin = forwardRef((props, ref) => {
-  const classes = useDokoonLoginStyles();
-  const router = useRouter();
-  const [username, setUsername] = useState('');
+const Login = forwardRef((props, ref) => {
+  const classes = useStyles();
+  const [csrfToken, setCsrfToken] = useState('');
+  const [userName, setUserName] = useState('');
+  const [error, setError] = useState('');
   const [password, setPassword] = useState('');
-  const [csrfToken, setCsrfToken] = useState(null);
-  const [state, send] = useMachine(loginMachine);
+  const [state, send] = useMachine(authMachine);
 
   useEffect(() => {
-    const fetchCSRF = async () => {
-      try {
-        const res = await fetch('http://localhost:8000/account/csrf/', { credentials: 'include' });
-        if (!res.ok) {
-          throw new Error(`خطا در دریافت توکن امنیتی! وضعیت: ${res.status}`); // Persian Error Message
-        }
-        const token = res.headers.get('X-CSRFToken');
-        setCsrfToken(token);
-      } catch (err) {
-        console.error('خطا در CSRF:', err); // Persian Error Message
-      }
-    };
-
-    fetchCSRF();
+    fetch('http://localhost:8000/account/csrf/', {
+      credentials: 'include',
+    })
+      .then((res) => {
+        let csrfToken = res.headers.get('X-CSRFToken');
+        setCsrfToken(csrfToken);
+      })
+      .catch((err) => {
+        setError(err.message);
+      });
   }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!csrfToken) {
-      return; // Prevent submission if CSRF is not available
-    }
-    send({ type: 'SUBMIT', username, password, csrfToken });
+    fetch('http://localhost:8000/account/login/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken,
+      },
+      credentials: 'include',
+      body: JSON.stringify({ username: userName, password: password }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          console.log('Login successful');
+          send({ type: 'LOGIN' }); // Send LOGIN event as an object
+          Router.push('/dashboard'); // Redirect to dashboard
+        } else {
+          setError('Could Not Connect To The Server Correctly');
+        }
+      })
+      .catch((err) => {
+        setError(err.message);
+      });
   };
 
   return (
@@ -143,28 +91,32 @@ const DokoonLogin = forwardRef((props, ref) => {
       <CssBaseline />
       <div className={classes.paper}>
         <Box className={classes.errorContainer}>
-          {state.context.error && <Alert severity="error">{state.context.error}</Alert>}
+          {' '}
+          {error && (
+            <Alert severity="error" className={classes.errorAlert}>
+              {' '}
+              {error}{' '}
+            </Alert>
+          )}{' '}
         </Box>
         <Avatar className={classes.avatar}>
           <LocalActivityOutlined />
         </Avatar>
         <Typography component="h1" variant="h5">
-          ورود {/* Sign In in Persian */}
+          Sign In
         </Typography>
         <form className={classes.form} onSubmit={handleSubmit} noValidate ref={ref}>
-          {state.matches('loading') && <div>در حال بارگذاری...</div>} {/* Loading in Persian */}
           <TextField
             variant="outlined"
             margin="normal"
             required
             fullWidth
             id="username"
-            label="نام کاربری" // Username in Persian
+            label="Username"
             name="username"
             autoComplete="username"
             autoFocus
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e) => setUserName(e.target.value)}
           />
           <TextField
             variant="outlined"
@@ -172,34 +124,25 @@ const DokoonLogin = forwardRef((props, ref) => {
             required
             fullWidth
             name="password"
-            label="رمز عبور" // Password in Persian
+            label="Password"
             type="password"
             id="password"
             autoComplete="current-password"
-            value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <FormControlLabel control={<Checkbox value="remember" color="primary" />} label="مرا به خاطر بسپار" />{' '}
-          {/* Remember me in Persian */}
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-            disabled={state.matches('loading') || !csrfToken}
-          >
-            ورود {/* Sign In in Persian */}
+          <FormControlLabel control={<Checkbox value="remember" color="primary" />} label="Remember me" />
+          <Button type="submit" fullWidth variant="contained" color="primary" className={classes.submit}>
+            Sign In
           </Button>
           <Grid container>
             <Grid item xs>
               <Link href="#" variant="body2">
-                رمز عبور را فراموش کرده‌اید؟ {/* Forgot Password in Persian */}
+                Forgot Password
               </Link>
             </Grid>
             <Grid item>
               <Link href="#" variant="body2">
-                حساب کاربری ندارید؟ ثبت نام کنید {/* Don't have an account? Sign Up in Persian */}
+                Don't Have an Account? Sign Up
               </Link>
             </Grid>
           </Grid>
@@ -209,4 +152,4 @@ const DokoonLogin = forwardRef((props, ref) => {
   );
 });
 
-export default DokoonLogin;
+export default Login;
