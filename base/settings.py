@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     "corsheaders",
     'mptt',
     "rest_framework",
-    "graphene_django"
+    "graphene_django",
     # Internal Apps
     'store',
     'account',
@@ -191,5 +191,5 @@ REST_FRAMEWORK = {
 }
 
 GRAPHENE = {
-    'SCHEMA': 'app.schema.schema'
+    'SCHEMA': 'store.schema.schema'
 }
