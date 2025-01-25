@@ -1,3 +1,4 @@
+// withAuth.js
 import React, { useEffect } from 'react';
 import Router from 'next/router';
 import { useMachine } from '@xstate/react';
@@ -18,16 +19,15 @@ const withAuth = (WrappedComponent) => {
         .then((response) => response.json())
         .then((data) => {
           if (data.username) {
-            send({ type: 'LOGIN' }); // Send LOGIN event as an object
+            send({ type: 'LOGIN' });
+            Router.push('/dashboard'); // Redirect to dashboard if logged in
           } else {
-            send({ type: 'LOGOUT' }); // Send LOGOUT event as an object
-            Router.push('/login'); // Redirect to login if not logged in
+            send({ type: 'LOGOUT' });
           }
         })
         .catch((err) => {
           console.error('Verification failed', err);
-          send({ type: 'LOGOUT' }); // Send LOGOUT event as an object
-          Router.push('/login'); // Redirect to login if verification fails
+          send({ type: 'LOGOUT' });
         });
     }, [send]);
 

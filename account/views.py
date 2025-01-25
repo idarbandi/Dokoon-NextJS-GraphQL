@@ -18,6 +18,7 @@ import json
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -27,10 +28,14 @@ from rest_framework.views import APIView
 # تابعی برای دریافت توکن CSRF و تنظیم کوکی آن
 # (Function to get CSRF token and set its cookie)
 def get_csrf(request):
-    response = JsonResponse(
-        {'اطلاعات': "کوکی CSRF با موفقیت تنظیم شد"})  # Info in Farsi
-    response['X-CSRFToken'] = get_token(request)
-    return response
+
+    token = get_token(request)
+    print("CSRF Token sent to client:", token)  # Log CSRF token sent to client
+    return JsonResponse({'csrfToken': token})
+    # response = JsonResponse(
+    #     {'اطلاعات': "کوکی CSRF با موفقیت تنظیم شد"})  # Info in Farsi
+    # response['X-CSRFToken'] = get_token(request)
+    # return response
 
 
 # نما (view) برای ورود به سیستم

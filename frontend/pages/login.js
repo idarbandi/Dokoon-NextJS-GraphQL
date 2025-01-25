@@ -1,7 +1,7 @@
 import React, { useState, useEffect, forwardRef } from 'react';
-
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
+import { useRouter } from 'next/router';
 import Router from 'next/router';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -12,11 +12,11 @@ import Grid from '@mui/material/Grid';
 import LockOpenOutlined, { LocalActivityOutlined } from '@material-ui/icons';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
+import Alert from '@mui/material/Alert';
 import { useMachine } from '@xstate/react';
 import authMachine from './authMachine';
 import { makeStyles } from '@material-ui/core';
-import Box from '@mui/material/Box';
-import Alert from '@mui/material/Alert';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.secondary.main,
   },
   form: {
-    width: '100%', // Fix IE 11 issue.
+    width: '100%',
     marginTop: theme.spacing(1),
   },
   submit: {
@@ -47,22 +47,55 @@ const Login = forwardRef((props, ref) => {
   const [error, setError] = useState('');
   const [password, setPassword] = useState('');
   const [state, send] = useMachine(authMachine);
+  const router = useRouter();
 
   useEffect(() => {
+    // Fetch CSRF token
     fetch('http://localhost:8000/account/csrf/', {
       credentials: 'include',
     })
-      .then((res) => {
-        let csrfToken = res.headers.get('X-CSRFToken');
+      .then((res) => res.json())
+      .then((data) => {
+        const csrfToken = data.csrfToken;
         setCsrfToken(csrfToken);
+        console.log('CSRF Token:', csrfToken);
+        console.log('CSRF Token Length:', csrfToken.length);
       })
       .catch((err) => {
         setError(err.message);
       });
   }, []);
 
+  useEffect(() => {
+    // Check if user is already logged in
+    fetch('http://localhost:8000/account/whoami/', {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.username) {
+          send({ type: 'LOGIN' });
+          router.push('/dashboard'); // Redirect to dashboard if already logged in
+        }
+      })
+      .catch((err) => {
+        console.error('Verification failed', err);
+      });
+  }, [router, send]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log('Submitting with CSRF Token:', csrfToken);
+
+    // Additional logging to verify headers and token
+    console.log('Headers:', {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': csrfToken,
+    });
+
     fetch('http://localhost:8000/account/login/', {
       method: 'POST',
       headers: {
@@ -75,8 +108,8 @@ const Login = forwardRef((props, ref) => {
       .then((response) => {
         if (response.ok) {
           console.log('Login successful');
-          send({ type: 'LOGIN' }); // Send LOGIN event as an object
-          Router.push('/dashboard'); // Redirect to dashboard
+          send({ type: 'LOGIN' });
+          router.push('/dashboard');
         } else {
           setError('Could Not Connect To The Server Correctly');
         }
@@ -91,13 +124,11 @@ const Login = forwardRef((props, ref) => {
       <CssBaseline />
       <div className={classes.paper}>
         <Box className={classes.errorContainer}>
-          {' '}
           {error && (
             <Alert severity="error" className={classes.errorAlert}>
-              {' '}
-              {error}{' '}
+              {error}
             </Alert>
-          )}{' '}
+          )}
         </Box>
         <Avatar className={classes.avatar}>
           <LocalActivityOutlined />

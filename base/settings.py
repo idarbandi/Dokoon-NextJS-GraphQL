@@ -70,7 +70,17 @@ CORS_EXPOSE_HEADERS = [
 CORS_ALLOW_CREDENTIALS = True
 CSRF_COOKIE_SAMESITE = 'Lax'
 SESSION_COOKIE_SAMESITE = 'Lax'
+# settings.py
+CSRF_USE_SESSIONS = True
 CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SECURE = False  # Set to True if you're using HTTPS
+
+CORS_ALLOW_HEADERS = [
+    'content-type',
+    'X-CSRFToken',
+    'X-Requested-With',
+]
+
 SESSION_COOKIE_HTTPONLY = True
 
 CORS_ORIGIN_WHITELIST = (

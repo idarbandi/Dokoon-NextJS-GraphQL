@@ -4,6 +4,7 @@ import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
+import Router from 'next/router';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -102,6 +103,7 @@ const DashboardContent = () => {
     setOpen(!open);
   };
 
+  // DashboardContent.js
   useEffect(() => {
     fetch('http://localhost:8000/account/whoami/', {
       headers: {
@@ -111,18 +113,23 @@ const DashboardContent = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
-        setWhoAmI(data.username);
+        if (data.username) {
+          setWhoAmI(data.username);
+        } else {
+          setWhoAmI('Guest'); // Set a default value if username is not provided
+        }
       })
       .catch((err) => {
         setError(err.message);
+        setWhoAmI('Guest'); // Set a default value in case of error
       });
 
     fetch('http://localhost:8000/account/csrf/', {
       credentials: 'include',
     })
-      .then((res) => {
-        let csrfToken = res.headers.get('X-CSRFToken');
+      .then((res) => res.json())
+      .then((data) => {
+        const csrfToken = data.csrfToken;
         setCsrfToken(csrfToken);
       })
       .catch((err) => {
@@ -130,6 +137,7 @@ const DashboardContent = () => {
       });
   }, []);
 
+  // DashboardContent.js
   const handleLogout = () => {
     fetch('http://localhost:8000/account/logout/', {
       method: 'POST',
@@ -142,6 +150,9 @@ const DashboardContent = () => {
       .then((response) => {
         if (response.ok) {
           send({ type: 'LOGOUT' });
+          Router.push('/login'); // Redirect to login page after logout
+        } else {
+          setError('Logout failed');
         }
       })
       .catch((err) => {
