@@ -17,11 +17,14 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
+from django.views.decorators.csrf import csrf_exempt
+from graphene_django.views import GraphQLView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("store.urls", namespace="store")),
     path("account/", include("account.urls", namespace="account")),
+    path("graphQl/", csrf_exempt(GraphQLView.as_view(graphiql=True)))
 ]
 
 # مسیریابی برای فایل‌های استاتیک (تنها در حالت توسعه)

@@ -44,10 +44,12 @@ INSTALLED_APPS = [
     "corsheaders",
     'mptt',
     "rest_framework",
+    "graphene_django"
     # Internal Apps
     'store',
     'account',
 ]
+
 
 # میان‌افزار برای مدیریت درخواست‌ها و پاسخ‌ها
 # (Middleware for handling requests and responses)
@@ -186,4 +188,8 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"
     ]
+}
+
+GRAPHENE = {
+    'SCHEMA': 'app.schema.schema'
 }
