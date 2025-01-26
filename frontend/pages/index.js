@@ -18,6 +18,8 @@ import Link from 'next/link';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
+import { gql } from '@apollo/client';
+import client from './api/apollo-client';
 
 // استایل‌های صفحه اصلی
 const useDokoonHomeStyles = makeStyles((theme) => ({
@@ -39,10 +41,10 @@ const useDokoonHomeStyles = makeStyles((theme) => ({
 }));
 
 // کامپوننت صفحه اصلی
-function DokoonHome({ posts, categories }) {
+function DokoonHome({ posts, categories, data }) {
   // Renamed to DokoonHome
   const classes = useDokoonHomeStyles();
-
+  console.log(data);
   return (
     <>
       <DokoonHeader data={categories} />
@@ -87,8 +89,32 @@ export async function getStaticProps() {
     const ress = await fetch('http://127.0.0.1:8000/api/دسته-بندی‌ها/');
     const categories = await ress.json();
 
+    const { data, error } = await client
+      .query({
+        query: gql`
+          query main_index {
+            mainIndex {
+              title
+              description
+              regularPrice
+              slug
+            }
+          }
+        `,
+      })
+      .catch((err) => {
+        console.error('Error making query:', err);
+      });
+
+    if (error) {
+      console.log('GraphQL query error:', error);
+    }
+
+    console.log('GraphQL data:', data);
+
     return {
       props: {
+        data: data.mainIndex,
         posts,
         categories,
       },
