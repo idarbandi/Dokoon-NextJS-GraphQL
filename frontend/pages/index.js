@@ -57,9 +57,17 @@ function DokoonHome({ posts, categories, data }) {
                   <Card className={classes.card} elevation={0}>
                     <CardMedia
                       className={classes.cardMedia}
-                      image={post.product_image?.[0]?.image || '/images/default.png'}
+                      image={
+                        post.product_image?.[0]?.image || '/images/default.png'
+                          ? post.product_image?.[0]?.image || '/images/default.png'
+                          : post.producImage?.[0]?.image || '/images/default.png'
+                      }
                       title={post.title}
-                      alt={post.product_image?.[0]?.alt_text || 'تصویر محصول'}
+                      alt={
+                        post.product_image?.[0]?.alt_text || 'تصویر محصول'
+                          ? post.product_image?.[0]?.alt_text || 'تصویر محصول'
+                          : post.productImage?.[0]?.altText || 'تصویر محصول'
+                      }
                     />
                     <CardContent>
                       <Typography gutterBottom component="p">
@@ -94,13 +102,20 @@ export async function getStaticProps() {
         query: gql`
           query main_index {
             mainIndex {
-              title
               description
-              regularPrice
+              id
               slug
+              title
+              productImage {
+                id
+                image
+                altText
+              }
+              regularPrice
             }
           }
         `,
+        // GraphQL Querry
       })
       .catch((err) => {
         console.error('Error making query:', err);
