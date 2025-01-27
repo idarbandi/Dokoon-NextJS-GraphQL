@@ -41,10 +41,9 @@ const useDokoonHomeStyles = makeStyles((theme) => ({
 }));
 
 // کامپوننت صفحه اصلی
-function DokoonHome({ posts, categories, data }) {
+function DokoonHome({ posts, categories }) {
   // Renamed to DokoonHome
   const classes = useDokoonHomeStyles();
-  console.log(data);
   return (
     <>
       <DokoonHeader data={categories} />
@@ -57,11 +56,7 @@ function DokoonHome({ posts, categories, data }) {
                   <Card className={classes.card} elevation={0}>
                     <CardMedia
                       className={classes.cardMedia}
-                      image={
-                        post.product_image?.[0]?.image || '/images/default.png'
-                          ? post.product_image?.[0]?.image || '/images/default.png'
-                          : post.producImage?.[0]?.image || '/images/default.png'
-                      }
+                      image={post.productImage[0].image}
                       title={post.title}
                       alt={
                         post.product_image?.[0]?.alt_text || 'تصویر محصول'
@@ -90,60 +85,44 @@ function DokoonHome({ posts, categories, data }) {
 
 // دریافت اطلاعات استاتیک
 export async function getStaticProps() {
+  let posts = [];
+  let categories = [];
+
   try {
-    const res = await fetch('http://127.0.0.1:8000/api/محصولات/');
-    const posts = await res.json();
-
-    const ress = await fetch('http://127.0.0.1:8000/api/دسته-بندی‌ها/');
-    const categories = await ress.json();
-
-    const { data, error } = await client
-      .query({
-        query: gql`
-          query main_index {
-            mainIndex {
-              description
+    const { data } = await client.query({
+      query: gql`
+        query main_index {
+          mainIndex {
+            description
+            id
+            slug
+            title
+            productImage {
               id
-              slug
-              title
-              productImage {
-                id
-                image
-                altText
-              }
-              regularPrice
+              image
+              altText
             }
+            regularPrice
           }
-        `,
-        // GraphQL Querry
-      })
-      .catch((err) => {
-        console.error('Error making query:', err);
-      });
+        }
+      `,
+    });
 
-    if (error) {
-      console.log('GraphQL query error:', error);
-    }
+    posts = data.mainIndex;
+    console.log(data);
 
     console.log('GraphQL data:', data);
-
-    return {
-      props: {
-        data: data.mainIndex,
-        posts,
-        categories,
-      },
-      revalidate: 10,
-    };
   } catch (error) {
     console.error('Error fetching data:', error);
-    return {
-      props: {
-        posts: [],
-        categories: [],
-      },
-    };
   }
+
+  return {
+    props: {
+      posts,
+      categories, // Assuming you also need to fetch categories
+    },
+    revalidate: 10,
+  };
 }
 
 export default DokoonHome; // Export is also renamed

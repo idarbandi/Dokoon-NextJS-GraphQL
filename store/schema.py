@@ -20,11 +20,19 @@ class ProductType(DjangoObjectType):
     class Meta:
         model = product
         fields = ('id', 'title', 'description',
-                  'regular_price', 'slug', 'product_image')
+                  'regular_price', 'slug', 'product_image', 'product_category')
 
 
 class Query(graphene.ObjectType):
     main_index = graphene.List(ProductType)
+    main_index_by_name = graphene.Field(
+        ProductType, slug=graphene.String(required=True))
+
+    def resolve_main_index_by_name(root, info, slug):
+        try:
+            return product.objects.get(slug=slug)
+        except product.DoesNotExist:
+            return None
 
     def resolve_main_index(root, info):
         return product.objects.all()

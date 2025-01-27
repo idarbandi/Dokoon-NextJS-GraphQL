@@ -75,7 +75,8 @@ class DokoonProductSpecification(models.Model):
 class DokoonProduct(models.Model):
     product_type = models.ForeignKey(
         DokoonProductType, on_delete=models.RESTRICT)
-    category = models.ForeignKey(DokoonCategory, on_delete=models.RESTRICT)
+    category = models.ForeignKey(
+        DokoonCategory, on_delete=models.RESTRICT, related_name='product_category')
     title = models.CharField(
         verbose_name=_("Title"), help_text=_("Required"), max_length=255
     )
