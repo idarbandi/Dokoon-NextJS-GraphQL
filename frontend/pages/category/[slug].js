@@ -8,70 +8,82 @@
  * We hope you find it useful! Contributions and feedback are welcome.
  * ****************************************************************************** */
 
+import React from 'react';
+import Head from 'next/head';
+import { useRouter } from 'next/router';
+import DokoonHeader from '../../components/header';
+import Container from '@material-ui/core/Container';
+import { gql } from '@apollo/client';
 import { makeStyles } from '@material-ui/core/styles';
-import Header from '../../components/header';
+import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
-import CardMedia from '@material-ui/core/CardMedia';
+import Typography from '@material-ui/core/Typography';
+import client from '../api/apollo-client';
+import Link from 'next/link';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import Link from 'next/link';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import Container from '@material-ui/core/Container';
-import { useRouter } from 'next/router';
+import CardMedia from '@material-ui/core/CardMedia';
 
-// استایل‌های این صفحه
-const useDokoonStyles = makeStyles((theme) => ({
-  example: { // This is unused, consider removing
-    color: '#ccc',
+// استایل‌های این صفحه (با نام DokoonCategory)
+const useDokoonCategoryStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
   },
   cardGrid: {
+    paddingTop: theme.spacing(8),
     paddingBottom: theme.spacing(8),
   },
   card: {
-    height: '100%',
     display: 'flex',
     flexDirection: 'column',
-    borderRadius: '0',
+    backgroundColor: '#fafafa',
   },
   cardMedia: {
-    paddingTop: '140%', // Aspect ratio for images
+    paddingTop: '56.25%',
+  },
+  cardContent: {
+    flexGrow: 1,
   },
 }));
 
-// کامپوننت اصلی صفحه دسته‌بندی
-function CategoryPage({ posts, categories }) { // More descriptive component name
-  const classes = useDokoonStyles();
+// کامپوننت صفحه دسته‌بندی
+const CategoryPage = ({ category, posts }) => {
+  const classes = useDokoonCategoryStyles();
   const router = useRouter();
 
   if (router.isFallback) {
-    return <div>در حال بارگذاری...</div>; // Persian loading message
+    return <Typography>در حال بارگذاری...</Typography>;
+  }
+
+  if (!category) {
+    return <Typography>دسته بندی یافت نشد.</Typography>;
   }
 
   return (
     <>
-      <Header data={categories} />
+      <Head>
+        <title>{category.name}</title>
+      </Head>
+      <DokoonHeader data={[category]} /> {/* Pass category as array */}
       <main>
         <Container className={classes.cardGrid} maxWidth="lg">
           <Grid container spacing={2}>
-            {/* نمایش اطلاعات محصولات در کنسول (برای دیباگ) */}
-            {console.log(posts)}
-            {posts.map((post) => (
-              <Link legacyBehavior key={post.id} href={`/product/${encodeURIComponent(post.slug)}`}>
+            {posts?.map((post, index) => (
+              <Link legacyBehavior key={post.id || index} href={`/product/${encodeURIComponent(post.slug)}`}>
                 <Grid item xs={6} sm={4} md={3}>
                   <Card className={classes.card} elevation={0}>
                     <CardMedia
                       className={classes.cardMedia}
-                      image={post.product_image[0]?.image || "/images/default.png"} // Handling potential missing images
-                      title={post.title} // Use post title for image title
-                      alt={post.product_image[0]?.alt_text || "تصویر محصول"} // Default alt text in Persian
+                      image={post.productImage[0]?.image}
+                      title={post.title}
+                      alt={post.productImage[0]?.altText || 'تصویر محصول'}
                     />
-                    <CardContent>
+                    <CardContent className={classes.cardContent}>
                       <Typography gutterBottom component="p">
                         {post.title}
                       </Typography>
                       <Box component="p" fontSize={16} fontWeight={900}>
-                        £{post.regular_price}
+                        £{post.regularPrice}
                       </Box>
                     </CardContent>
                   </Card>
@@ -83,41 +95,78 @@ function CategoryPage({ posts, categories }) { // More descriptive component nam
       </main>
     </>
   );
-}
+};
 
-// دریافت مسیرهای استاتیک
 export async function getStaticPaths() {
+  let paths = [];
+
+  try {
+    const query = gql`
+      query {
+        allSlugs
+      }
+    `;
+    const { data } = await client.query({ query });
+
+    paths = data.allSlugs.map((slug) => ({
+      params: { slug },
+    }));
+  } catch (error) {
+    console.error('Error fetching paths:', error);
+  }
+
   return {
-    paths: [{ params: { slug: 'shoes' } }], // You should fetch this dynamically in a real app.
+    paths,
     fallback: true,
   };
 }
 
-// دریافت اطلاعات استاتیک
 export async function getStaticProps({ params }) {
-  try { // Added try-catch for error handling
-    const res = await fetch(`http://127.0.0.1:8000/api/category/${params.slug}`);
-    const posts = await res.json();
+  let category = null;
+  let posts = [];
 
-    const ress = await fetch('http://127.0.0.1:8000/api/category/');
-    const categories = await ress.json();
+  try {
+    const query = gql`
+      query MyQuery($name: String!) {
+        categoryIndex(name: $name) {
+          id
+          name
+          productCategory {
+            id
+            title
+            description
+            regularPrice
+            productImage {
+              id
+              image
+              altText
+            }
+          }
+        }
+      }
+    `;
+    const variables = { name: params.slug };
+    console.log('Fetching data with variables:', variables); // Add logging
+    const { data } = await client.query({ query, variables });
 
-    return {
-      props: {
-        posts,
-        categories,
-      },
-      revalidate: 10, // Revalidate every 10 seconds (adjust as needed)
-    };
+    console.log('Received data:', data); // Add logging
+
+    category = data.categoryIndex;
+    posts = category?.productCategory || [];
   } catch (error) {
-    console.error("Error fetching data:", error);
+    console.error('Error fetching data:', error.message);
     return {
-      props: {
-        posts: [],
-        categories: [],
-      },
+      notFound: true,
     };
   }
+
+  return {
+    props: {
+      category,
+      posts,
+    },
+    revalidate: 10,
+  };
 }
 
-export default CategoryPage; // Export with the new name
+export default CategoryPage;

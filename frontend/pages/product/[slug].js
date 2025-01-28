@@ -62,6 +62,7 @@ const useDokoonProductStyles = makeStyles((theme) => ({
 // کامپوننت صفحه محصول
 function ProductPage({ post, categories }) {
   const classes = useDokoonProductStyles();
+  // console.log(post)
   const router = useRouter();
 
   if (router.isFallback) {
@@ -100,9 +101,7 @@ export async function getStaticPaths() {
     const { data } = await client.query({
       query: gql`
         query {
-          allSlugs {
-            slug
-          }
+          allSlugs
         }
       `,
     });
@@ -111,7 +110,7 @@ export async function getStaticPaths() {
       params: { slug },
     }));
   } catch (error) {
-    console.error('Error fetching paths:', error);
+    // console.error('Error fetching paths:', error);
   }
 
   return {
@@ -127,7 +126,7 @@ export async function getStaticProps({ params }) {
   try {
     const { data } = await client.query({
       query: gql`
-        query ($slug: String!) {
+        query main_index_by_name($slug: String!) {
           mainIndexByName(slug: $slug) {
             id
             title
@@ -142,12 +141,11 @@ export async function getStaticProps({ params }) {
       `,
       variables: { slug: params.slug },
     });
-
     post = data.mainIndexByName;
     // Assuming you need to fetch categories as well, similar to DokoonHome
     // categories = data.categories;
   } catch (error) {
-    console.error('Error fetching data:', error);
+    // console.error('Error fetching data:', error);
     return {
       notFound: true,
     };
