@@ -128,7 +128,7 @@ export async function getStaticProps({ params }) {
   try {
     const query = gql`
       query MyQuery($name: String!) {
-        categoryIndex(name: $name) {
+        categoryIndexByName(name: $name) {
           id
           name
           productCategory {
@@ -151,7 +151,7 @@ export async function getStaticProps({ params }) {
 
     console.log('Received data:', data); // Add logging
 
-    category = data.categoryIndex;
+    category = data.categoryIndexByName;
     posts = category?.productCategory || [];
   } catch (error) {
     console.error('Error fetching data:', error.message);

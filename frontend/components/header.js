@@ -63,6 +63,12 @@ const useDokoonStyles = makeStyles((theme) => ({
     color: '#fff',
     textDecoration: 'none',
   },
+  logoText: {
+    fontSize: '100px', // Increased size
+    fontFamily: '"Times New Roman", serif', // Classic serif font
+    fill: '#fff', // White text
+    textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)', // Add shadow for visibility
+  },
 }));
 
 const DokoonListItem = forwardRef((props, ref) => {
@@ -92,18 +98,18 @@ export default function Header({ data }) {
         </Container>
       </AppBar>
       <AppBar position="static" elevation={0} className={classes.appbarMain}>
-        <Container maxWidth="lg">
+        <Container maxWidth="g">
           <Toolbar className={classes.toolbarMain}>
             <Link href="/" passHref legacyBehavior>
               <a>
                 <svg
                   className={classes.svg}
                   xmlns="http://www.w3.org/2000/svg"
-                  width="120"
-                  height="50"
-                  viewBox="23 0 476 140"
+                  width="993" // Increased width
+                  height="99" // Increased height
+                  viewBox="0 0 476 140"
                 >
-                  <text x="82" y="90" fontSize="90" fill="white">
+                  <text x="482" y="90" className={classes.logoText}>
                     DOKOON
                   </text>
                 </svg>
@@ -118,7 +124,7 @@ export default function Header({ data }) {
             <List className={classes.menuList}>
               {data.map((category) => (
                 <DokoonListItem key={category.name} className={classes.menuListItem} ref={listItemRef}>
-                  <Link href={`/category/${encodeURIComponent(category.slug)}`} passHref legacyBehavior>
+                  <Link href={`/category/${category.name}`} passHref legacyBehavior>
                     <a className={classes.listItemLink}>{category.name}</a>
                   </Link>
                 </DokoonListItem>

@@ -27,12 +27,13 @@ class ProductType(DjangoObjectType):
 class CategoryType(DjangoObjectType):
     class Meta:
         model = Category
-        fields = ('id', 'name', 'product_category')
+        fields = ('id', 'name', 'product_category', 'level')
 
 
 class Query(graphene.ObjectType):
     main_index = graphene.List(ProductType)
-    category_index = graphene.Field(
+    category_index = graphene.List(CategoryType)
+    category_index_by_name = graphene.Field(
         CategoryType, name=graphene.String(required=True))
     main_index_by_name = graphene.Field(
         ProductType, slug=graphene.String(required=True))
@@ -44,7 +45,7 @@ class Query(graphene.ObjectType):
         except Product.DoesNotExist:
             return None
 
-    def resolve_category_index(root, info, name):
+    def resolve_category_index_by_name(root, info, name):
         try:
             return Category.objects.get(name=name)
         except Category.DoesNotExist:
@@ -52,6 +53,9 @@ class Query(graphene.ObjectType):
 
     def resolve_main_index(root, info):
         return Product.objects.all()
+
+    def resolve_category_index(root, info):
+        return Category.objects.filter(level=1)
 
     def resolve_all_slugs(root, info):
         return Product.objects.values_list('slug', flat=True)
