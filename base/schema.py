@@ -4,7 +4,7 @@ import account.schema
 import store.schema
 
 
-class Query(store.schema.Query, graphene.ObjectType):
+class Query(store.schema.Query, account.schema.Query, graphene.ObjectType):
     pass
 
 
