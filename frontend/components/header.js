@@ -1,13 +1,3 @@
-/** ********************************************************************************
- * Dokoon Project
- * Author: Idarbandi
- * GitHub: https://github.com/idarbandi/Dokoon-NextDRF
- * Email: darbandidr99@gmail.com
- *
- * This project was developed by Idarbandi.
- * We hope you find it useful! Contributions and feedback are welcome.
- * ****************************************************************************** */
-
 import React, { useRef, useEffect, forwardRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -16,7 +6,6 @@ import Container from '@material-ui/core/Container';
 import List from '@material-ui/core/List';
 import Link from 'next/link';
 
-// استایل‌های کامپوننت هدر
 const useDokoonStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -76,22 +65,24 @@ const useDokoonStyles = makeStyles((theme) => ({
   },
 }));
 
-// کامپوننت سفارشی برای آیتم‌های لیست منو
-const DokoonListItem = forwardRef((props, ref) => { // Renamed to DokoonListItem
+const DokoonListItem = forwardRef((props, ref) => {
   return <li ref={ref} {...props} />;
 });
 
-// کامپوننت اصلی هدر
 export default function Header({ data }) {
   const classes = useDokoonStyles();
   const listItemRef = useRef();
 
   useEffect(() => {
-    // اگر رفرنس آیتم لیست وجود داشته باشد، در اینجا می‌توانیم با DOM کار کنیم
     if (listItemRef.current) {
       console.log(listItemRef.current);
     }
   }, [listItemRef]);
+
+  if (!Array.isArray(data)) {
+    console.error('Data is not an array:', data);
+    return null; // Render nothing or a fallback component
+  }
 
   return (
     <nav>
@@ -126,7 +117,7 @@ export default function Header({ data }) {
           <Toolbar className={classes.toolbarSecondary}>
             <List className={classes.menuList}>
               {data.map((category) => (
-                <DokoonListItem key={category.name} className={classes.menuListItem} ref={listItemRef}> {/* Using DokoonListItem */}
+                <DokoonListItem key={category.name} className={classes.menuListItem} ref={listItemRef}>
                   <Link href={`/category/${encodeURIComponent(category.slug)}`} passHref legacyBehavior>
                     <a className={classes.listItemLink}>{category.name}</a>
                   </Link>
