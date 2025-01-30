@@ -182,14 +182,6 @@ MEDIA_ROOT = BASE_DIR / "media/"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# تنظیمات Rest Framework
-# (Rest Framework settings)
-REST_FRAMEWORK = {
-    "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"
-    ]
-}
-
 GRAPHENE = {
     'SCHEMA': 'base.schema.schema',
     "MIDDLEWARE": [

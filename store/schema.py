@@ -59,6 +59,3 @@ class Query(graphene.ObjectType):
 
     def resolve_all_slugs(root, info):
         return Product.objects.values_list('slug', flat=True)
-
-
-schema = graphene.Schema(query=Query)
