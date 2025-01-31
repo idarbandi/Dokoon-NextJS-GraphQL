@@ -1,22 +1,19 @@
-import React, { useState, useEffect, forwardRef } from 'react';
+import React, { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
-import { useRouter } from 'next/router';
-import Router from 'next/router';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
-import LockOpenOutlined, { LocalActivityOutlined } from '@material-ui/icons';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
-import { useMachine } from '@xstate/react';
-import authMachine from './authMachine';
 import { makeStyles } from '@material-ui/core';
+import { useAuthentication } from './api/authorization';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -40,83 +37,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Login = forwardRef((props, ref) => {
+export default function SignIn() {
   const classes = useStyles();
-  const [csrfToken, setCsrfToken] = useState('');
-  const [userName, setUserName] = useState('');
-  const [error, setError] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [state, send] = useMachine(authMachine);
-  const router = useRouter();
+  const { signIn, error } = useAuthentication();
 
-  useEffect(() => {
-    // Fetch CSRF token
-    fetch('http://localhost:8000/account/csrf/', {
-      credentials: 'include',
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        const csrfToken = data.csrfToken;
-        setCsrfToken(csrfToken);
-        console.log('CSRF Token:', csrfToken);
-        console.log('CSRF Token Length:', csrfToken.length);
-      })
-      .catch((err) => {
-        setError(err.message);
-      });
-  }, []);
-
-  useEffect(() => {
-    // Check if user is already logged in
-    fetch('http://localhost:8000/account/whoami/', {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.username) {
-          send({ type: 'LOGIN' });
-          router.push('/dashboard'); // Redirect to dashboard if already logged in
-        }
-      })
-      .catch((err) => {
-        console.error('Verification failed', err);
-      });
-  }, [router, send]);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Submitting with CSRF Token:', csrfToken);
-
-    // Additional logging to verify headers and token
-    console.log('Headers:', {
-      'Content-Type': 'application/json',
-      'X-CSRFToken': csrfToken,
-    });
-
-    fetch('http://localhost:8000/account/login/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': csrfToken,
-      },
-      credentials: 'include',
-      body: JSON.stringify({ username: userName, password: password }),
-    })
-      .then((response) => {
-        if (response.ok) {
-          console.log('Login successful');
-          send({ type: 'LOGIN' });
-          router.push('/dashboard');
-        } else {
-          setError('Could Not Connect To The Server Correctly');
-        }
-      })
-      .catch((err) => {
-        setError(err.message);
-      });
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    signIn({ username, password });
   };
 
   return (
@@ -131,12 +60,12 @@ const Login = forwardRef((props, ref) => {
           )}
         </Box>
         <Avatar className={classes.avatar}>
-          <LocalActivityOutlined />
+          <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Sign In
+          Sign in
         </Typography>
-        <form className={classes.form} onSubmit={handleSubmit} noValidate ref={ref}>
+        <form className={classes.form} onSubmit={handleSubmit} noValidate>
           <TextField
             variant="outlined"
             margin="normal"
@@ -147,7 +76,7 @@ const Login = forwardRef((props, ref) => {
             name="username"
             autoComplete="username"
             autoFocus
-            onChange={(e) => setUserName(e.target.value)}
+            onChange={(e) => setUsername(e.target.value)}
           />
           <TextField
             variant="outlined"
@@ -168,12 +97,12 @@ const Login = forwardRef((props, ref) => {
           <Grid container>
             <Grid item xs>
               <Link href="#" variant="body2">
-                Forgot Password
+                Forgot password?
               </Link>
             </Grid>
             <Grid item>
               <Link href="#" variant="body2">
-                Don't Have an Account? Sign Up
+                {"Don't have an account? Sign Up"}
               </Link>
             </Grid>
           </Grid>
@@ -181,6 +110,4 @@ const Login = forwardRef((props, ref) => {
       </div>
     </Container>
   );
-});
-
-export default Login;
+}
