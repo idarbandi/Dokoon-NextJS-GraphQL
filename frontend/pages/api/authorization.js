@@ -1,13 +1,17 @@
 import { createContext, useContext, useState } from 'react';
-import { LoginMutation } from '../graphQL/graphQL';
-import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client';
+import { ApolloClient, HttpLink, InMemoryCache, ApolloProvider } from '@apollo/client';
 import Router from 'next/router';
+import { LoginMutation } from '../graphQL/graphQL';
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const auth = useAuthProvider();
-  return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={auth}>
+      <ApolloProvider client={auth.createApolloClient()}>{children}</ApolloProvider>
+    </AuthContext.Provider>
+  );
 }
 
 export const useAuthentication = () => {
@@ -19,11 +23,11 @@ function useAuthProvider() {
   const [userName, setUserName] = useState(null);
   const [error, setError] = useState(null);
 
-  // Create a "dirty" Apollo client for testing
-  // In authorization.js - Fix the Apollo Client setup
+  const isSignedIn = () => !!authToken;
+
   const createApolloClient = () => {
     const httpLink = new HttpLink({
-      uri: 'http://127.0.0.1:8000/graphQl/', // ← Fix IP and remove trailing slash
+      uri: 'http://127.0.0.1:8000/graphQl/', // Ensure the IP and URI are correct
       credentials: 'include',
     });
 
@@ -47,7 +51,6 @@ function useAuthProvider() {
     });
   };
 
-  // Modify the signIn function to log detailed errors
   const signIn = async ({ username, password }) => {
     try {
       const client = createApolloClient();
@@ -56,7 +59,7 @@ function useAuthProvider() {
         variables: { username, password },
       });
 
-      console.log('Full response:', { data, errors }); // Add this
+      console.log('Full response:', { data, errors }); // Add logging
 
       if (errors) {
         throw new Error(errors[0].message);
@@ -79,6 +82,8 @@ function useAuthProvider() {
   return {
     authToken,
     signIn,
+    createApolloClient, // Ensure this is returned
     error,
+    isSignedIn,
   };
 }

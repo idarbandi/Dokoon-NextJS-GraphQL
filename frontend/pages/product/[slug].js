@@ -19,7 +19,7 @@ import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Hidden from '@material-ui/core/Hidden';
 import Typography from '@material-ui/core/Typography';
-import client from '../api/apollo-client';
+import { DokoonProductSlug } from '../graphQL/graphQL';
 
 // استایل‌های این صفحه (با نام Dokoon)
 const useDokoonProductStyles = makeStyles((theme) => ({
@@ -62,11 +62,14 @@ const useDokoonProductStyles = makeStyles((theme) => ({
 // کامپوننت صفحه محصول
 function ProductPage({ post, categories }) {
   const classes = useDokoonProductStyles();
-  // console.log(post)
   const router = useRouter();
 
   if (router.isFallback) {
     return <Typography>در حال بارگذاری...</Typography>;
+  }
+
+  if (!post || Object.keys(post).length === 0) {
+    return <Typography>محصولی یافت نشد.</Typography>;
   }
 
   return (
@@ -79,7 +82,11 @@ function ProductPage({ post, categories }) {
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6}>
             <Paper className={classes.paperImagePreview}>
-              <img className={classes.img} src={post.productImage[0].image} alt={post.productImage[0].altText} />
+              <img
+                className={classes.img}
+                src={post.productImage?.[0]?.image || '/default-image.jpg'}
+                alt={post.productImage?.[0]?.altText || post.title}
+              />
             </Paper>
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -124,28 +131,16 @@ export async function getStaticProps({ params }) {
   let categories = [];
 
   try {
-    const { data } = await client.query({
-      query: gql`
-        query main_index_by_name($slug: String!) {
-          mainIndexByName(slug: $slug) {
-            id
-            title
-            description
-            productImage {
-              id
-              image
-              altText
-            }
-          }
-        }
-      `,
-      variables: { slug: params.slug },
-    });
+    const { data } = await DokoonProductSlug(params.slug);
     post = data.mainIndexByName;
-    // Assuming you need to fetch categories as well, similar to DokoonHome
-    // categories = data.categories;
+
+    // If you need to fetch categories, you can do it here
+    // const categoriesData = await client.query({ /* your categories query */ });
+    // categories = categoriesData.data.categories;
+
+    console.log('GraphQL data:', data);
   } catch (error) {
-    // console.error('Error fetching data:', error);
+    console.error('Error fetching data:', error);
     return {
       notFound: true,
     };
@@ -154,7 +149,7 @@ export async function getStaticProps({ params }) {
   return {
     props: {
       post,
-      categories, // Assuming you also need to fetch categories
+      categories,
     },
     revalidate: 10,
   };

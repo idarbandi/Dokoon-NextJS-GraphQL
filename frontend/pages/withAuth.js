@@ -2,34 +2,25 @@
 import React, { useEffect } from 'react';
 import Router from 'next/router';
 import { useMachine } from '@xstate/react';
+import { useQuery } from '@apollo/client';
 import authMachine from './authMachine';
+import { userDetails } from './graphQL/graphQL'; // Import the userDetails query
 
 const withAuth = (WrappedComponent) => {
   return (props) => {
     const [state, send] = useMachine(authMachine);
+    const { data, loading, error } = useQuery(userDetails); // Execute the userDetails query
 
     useEffect(() => {
-      // Check if user is logged in
-      fetch('http://localhost:8000/account/whoami/', {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.username) {
-            send({ type: 'LOGIN' });
-            Router.push('/dashboard'); // Redirect to dashboard if logged in
-          } else {
-            send({ type: 'LOGOUT' });
-          }
-        })
-        .catch((err) => {
-          console.error('Verification failed', err);
-          send({ type: 'LOGOUT' });
-        });
-    }, [send]);
+      if (loading) return; // If the query is still loading, do nothing
+
+      if (error || !data?.userDetails?.username) {
+        send({ type: 'LOGOUT' });
+        Router.push('/login'); // Redirect to login if not authenticated
+      } else {
+        send({ type: 'LOGIN' });
+      }
+    }, [data, loading, error, send]);
 
     if (state.matches('loggedOut')) {
       return null; // Or you can render a loading spinner

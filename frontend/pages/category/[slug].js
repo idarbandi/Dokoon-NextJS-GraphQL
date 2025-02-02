@@ -18,11 +18,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
-import client from '../api/apollo-client';
 import Link from 'next/link';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
+import { DokoonCategorySlug } from '../graphQL/graphQL';
+import client from '../graphQL/graphQL';
 
 // استایل‌های این صفحه (با نام DokoonCategory)
 const useDokoonCategoryStyles = makeStyles((theme) => ({
@@ -101,12 +102,13 @@ export async function getStaticPaths() {
   let paths = [];
 
   try {
-    const query = gql`
-      query {
-        allSlugs
-      }
-    `;
-    const { data } = await client.query({ query });
+    const { data } = await client.query({
+      query: gql`
+        query {
+          allSlugs
+        }
+      `,
+    });
 
     paths = data.allSlugs.map((slug) => ({
       params: { slug },
@@ -121,42 +123,29 @@ export async function getStaticPaths() {
   };
 }
 
+
 export async function getStaticProps({ params }) {
   let category = null;
   let posts = [];
 
-  try {
-    const query = gql`
-      query MyQuery($name: String!) {
-        categoryIndexByName(name: $name) {
-          id
-          name
-          productCategory {
-            id
-            title
-            description
-            regularPrice
-            productImage {
-              id
-              image
-              altText
-            }
-          }
-        }
-      }
-    `;
-    const variables = { name: params.slug };
-    console.log('Fetching data with variables:', variables); // Add logging
-    const { data } = await client.query({ query, variables });
+  const name = params.slug;
+  console.log('Fetching data with name:', name);
 
-    console.log('Received data:', data); // Add logging
+  try {
+    const data = await DokoonCategorySlug(name);
+
+    if (!data || !data.categoryIndexByName) {
+      throw new Error('Category not found');
+    }
+
+    console.log('Received data:', data);
 
     category = data.categoryIndexByName;
-    posts = category?.productCategory || [];
+    posts = category.productCategory || [];
   } catch (error) {
-    console.error('Error fetching data:', error.message);
+    console.error('Error fetching category data:', error);
     return {
-      notFound: true,
+      notFound: true, // This will render the 404 page
     };
   }
 

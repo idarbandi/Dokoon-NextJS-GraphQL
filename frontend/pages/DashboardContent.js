@@ -86,12 +86,17 @@ const mdTheme = createTheme();
 const DashboardContent = () => {
   const [open, setOpen] = useState(true);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [whoAmI, setWhoAmI] = useState('ناشناخته');
-  const [error, setError] = useState('');
-  const [csrfToken, setCsrfToken] = useState('');
   const [state, send] = useMachine(authMachine);
+  const [error, setError] = useState('');
 
   const openMenu = Boolean(anchorEl);
+
+  // Toggle the drawer open/close state
+  const toggleDrawer = () => {
+    setOpen(!open);
+  };
+
+  // Handle user menu actions
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -99,67 +104,36 @@ const DashboardContent = () => {
     setAnchorEl(null);
   };
 
-  const toggleDrawer = () => {
-    setOpen(!open);
-  };
+  // Fetch current user data using GraphQL
+  const { loading: userLoading, error: userError, data: userData } = useQuery(GET_CURRENT_USER);
 
-  // DashboardContent.js
-  useEffect(() => {
-    fetch('http://localhost:8000/account/whoami/', {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.username) {
-          setWhoAmI(data.username);
-        } else {
-          setWhoAmI('Guest'); // Set a default value if username is not provided
-        }
-      })
-      .catch((err) => {
-        setError(err.message);
-        setWhoAmI('Guest'); // Set a default value in case of error
-      });
+  // Logout mutation
+  const [logout, { loading: logoutLoading }] = useMutation(LOGOUT_MUTATION, {
+    onCompleted: (data) => {
+      if (data.logout.success) {
+        send({ type: 'LOGOUT' });
+        Router.push('/login');
+      } else {
+        setError('Logout failed');
+      }
+    },
+    onError: (error) => {
+      console.error('Logout error:', error);
+      setError(error.message);
+    },
+  });
 
-    fetch('http://localhost:8000/account/csrf/', {
-      credentials: 'include',
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        const csrfToken = data.csrfToken;
-        setCsrfToken(csrfToken);
-      })
-      .catch((err) => {
-        setError(err.message);
-      });
-  }, []);
-
-  // DashboardContent.js
   const handleLogout = () => {
-    fetch('http://localhost:8000/account/logout/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': csrfToken,
-      },
-      credentials: 'include',
-    })
-      .then((response) => {
-        if (response.ok) {
-          send({ type: 'LOGOUT' });
-          Router.push('/login'); // Redirect to login page after logout
-        } else {
-          setError('Logout failed');
-        }
-      })
-      .catch((err) => {
-        console.error('Logout failed', err);
-        setError(err.message);
-      });
+    logout();
   };
+
+  // Render loading state or error
+  if (userLoading) return <p>Loading...</p>;
+  if (userError) return <p>Error: {userError.message}</p>;
+
+  const user = userData?.me;
+  const username = user?.username || 'Guest';
+  const avatarUrl = user?.avatarUrl || 'avatar1.jpg'; // Default avatar if none
 
   return (
     <ThemeProvider theme={mdTheme}>
@@ -183,9 +157,9 @@ const DashboardContent = () => {
             </Typography>
 
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Typography variant="body1">{whoAmI}</Typography>
+              <Typography variant="body1">{username}</Typography>
               <IconButton onClick={handleMenuClick}>
-                <Avatar alt="User Name" src="avatar1.jpg" />
+                <Avatar alt={username} src={avatarUrl} />
               </IconButton>
               <Menu
                 id="basic-menu"
@@ -197,7 +171,7 @@ const DashboardContent = () => {
                 }}
               >
                 <MenuItem onClick={handleCloseMenu}>پروفایل</MenuItem>
-                <MenuItem onClick={handleLogout}>
+                <MenuItem onClick={handleLogout} disabled={logoutLoading}>
                   خروج
                   <PowerSettingsNewIcon sx={{ ml: 1 }} />
                 </MenuItem>

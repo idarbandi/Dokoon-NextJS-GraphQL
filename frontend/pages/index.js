@@ -18,8 +18,7 @@ import Link from 'next/link';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
-import { gql } from '@apollo/client';
-import client from './api/apollo-client';
+import { DokoonIndexData } from './graphQL/graphQL';
 
 // استایل‌های صفحه اصلی
 const useDokoonHomeStyles = makeStyles((theme) => ({
@@ -42,8 +41,11 @@ const useDokoonHomeStyles = makeStyles((theme) => ({
 
 // کامپوننت صفحه اصلی
 function DokoonHome({ posts, categories }) {
-  console.log(posts)
   const classes = useDokoonHomeStyles();
+
+  if (!posts || !categories) {
+    return <Typography>Loading...</Typography>;
+  }
 
   return (
     <>
@@ -51,26 +53,22 @@ function DokoonHome({ posts, categories }) {
       <main>
         <Container className={classes.cardGrid} maxWidth="lg">
           <Grid container spacing={2}>
-            {posts?.map((post, index) => (
+            {posts.map((post, index) => (
               <Link legacyBehavior key={post.id || index} href={`product/${post.slug}`}>
                 <Grid item xs={6} sm={4} md={3}>
                   <Card className={classes.card} elevation={0}>
                     <CardMedia
                       className={classes.cardMedia}
-                      image={post.productImage[0].image}
+                      image={post.productImage?.[0]?.image || '/placeholder.jpg'}
                       title={post.title}
-                      alt={
-                        post.product_image?.[0]?.alt_text || 'تصویر محصول'
-                          ? post.product_image?.[0]?.alt_text || 'تصویر محصول'
-                          : post.productImage[0].altText || 'تصویر محصول'
-                      }
+                      alt={post.productImage?.[0]?.altText || 'تصویر محصول'}
                     />
                     <CardContent>
                       <Typography gutterBottom component="p">
                         {post.title}
                       </Typography>
                       <Box component="p" fontSize={16} fontWeight={900}>
-                        £{post.regularPrice} {/* Updated to regularPrice */}
+                        £{post.regularPrice}
                       </Box>
                     </CardContent>
                   </Card>
@@ -90,35 +88,19 @@ export async function getStaticProps() {
   let categories = [];
 
   try {
-    const { data } = await client.query({
-      query: gql`
-        query main_index {
-          mainIndex {
-            description
-            id
-            slug
-            title
-            productImage {
-              id
-              image
-              altText
-            }
-            regularPrice
-          }
-          categoryIndex {
-            id
-            name
-          }
-        }
-      `,
-    });
-
+    const { data } = await DokoonIndexData();
     posts = data.mainIndex;
     categories = data.categoryIndex;
 
     console.log('GraphQL data:', data);
   } catch (error) {
     console.error('Error fetching data:', error);
+    return {
+      props: {
+        posts: [],
+        categories: [],
+      },
+    };
   }
 
   return {
@@ -131,6 +113,3 @@ export async function getStaticProps() {
 }
 
 export default DokoonHome;
-
-
-
