@@ -5,6 +5,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Container from '@material-ui/core/Container';
 import List from '@material-ui/core/List';
 import Link from 'next/link';
+import { useRouter } from 'next/router'; // Import useRouter
 
 const useDokoonStyles = makeStyles((theme) => ({
   root: {
@@ -63,6 +64,12 @@ const useDokoonStyles = makeStyles((theme) => ({
     color: '#fff',
     textDecoration: 'none',
   },
+  activeCategory: {
+    fontSize: 13,
+    color: '#fff',
+    fontWeight: 'bold', // Highlight the active category
+    textDecoration: 'underline', // Optional underline
+  },
   logoText: {
     fontSize: '100px', // Increased size
     fontFamily: '"Times New Roman", serif', // Classic serif font
@@ -78,6 +85,7 @@ const DokoonListItem = forwardRef((props, ref) => {
 export default function Header({ data }) {
   const classes = useDokoonStyles();
   const listItemRef = useRef();
+  const router = useRouter(); // Access the router
 
   useEffect(() => {
     if (listItemRef.current) {
@@ -89,6 +97,9 @@ export default function Header({ data }) {
     console.error('Data is not an array:', data);
     return null; // Render nothing or a fallback component
   }
+
+  // Get the current category slug from the URL
+  const currentCategorySlug = router.query.slug || '';
 
   return (
     <nav>
@@ -122,13 +133,26 @@ export default function Header({ data }) {
         <Container maxWidth="lg">
           <Toolbar className={classes.toolbarSecondary}>
             <List className={classes.menuList}>
-              {data.map((category) => (
-                <DokoonListItem key={category.name} className={classes.menuListItem} ref={listItemRef}>
-                  <Link href={`/category/${category.name}`} passHref legacyBehavior>
-                    <a className={classes.listItemLink}>{category.name}</a>
-                  </Link>
-                </DokoonListItem>
-              ))}
+              {data.map((category) => {
+                // Check if the category name matches the current slug
+                const isActive = category.name.toLowerCase() === currentCategorySlug.toLowerCase();
+
+                return (
+                  <DokoonListItem key={category.name} className={classes.menuListItem} ref={listItemRef}>
+                    {isActive ? (
+                      // Render as plain text if on the current category page
+                      <span className={classes.activeCategory} aria-current="page">
+                        {category.name}
+                      </span>
+                    ) : (
+                      // Render as link if not on the current category page
+                      <Link href={`/category/${category.name}`} passHref legacyBehavior>
+                        <a className={classes.listItemLink}>{category.name}</a>
+                      </Link>
+                    )}
+                  </DokoonListItem>
+                );
+              })}
             </List>
           </Toolbar>
         </Container>
