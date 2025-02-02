@@ -1,11 +1,45 @@
-import { gql, ApolloClient, InMemoryCache } from '@apollo/client';
+// graphQL/graphQL.js
+import { ApolloClient, InMemoryCache, createHttpLink, gql } from '@apollo/client';
+
+const httpLink = createHttpLink({
+  uri: 'http://127.0.0.1:8000/graphQl/',
+  credentials: 'include',
+});
 
 const client = new ApolloClient({
-  uri: 'http://127.0.0.1:8000/graphQl/',
+  link: httpLink,
   cache: new InMemoryCache(),
 });
 
 export default client;
+
+export const userDetails = gql`
+  query UserDetails {
+    userDetails {
+      id
+      username
+      email
+    }
+  }
+`;
+
+export const LoginMutation = gql`
+  mutation TokenAuth($username: String!, $password: String!) {
+    tokenAuth(username: $username, password: $password) {
+      token
+      payload
+    }
+  }
+`;
+
+export const LOGOUT_MUTATION = gql`
+  mutation Logout {
+    logout {
+      success
+      errors
+    }
+  }
+`;
 
 export async function DokoonIndexData() {
   return await client.query({
@@ -31,34 +65,6 @@ export async function DokoonIndexData() {
     `,
   });
 }
-
-export const LoginMutation = gql`
-  mutation TokenAuth($username: String!, $password: String!) {
-    tokenAuth(username: $username, password: $password) {
-      token
-      payload
-    }
-  }
-`;
-
-export const userDetails = gql`
-  query {
-    userDetails {
-      id
-      username
-      email
-    }
-  }
-`;
-
-export const LOGOUT_MUTATION = gql`
-  mutation Logout {
-    logout {
-      success
-      errors
-    }
-  }
-`;
 
 export async function DokoonProductSlug(slug) {
   return await client.query({

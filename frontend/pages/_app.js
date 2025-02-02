@@ -1,10 +1,17 @@
-import '@/styles/globals.css';
+// _app.js
+import { ApolloProvider } from '@apollo/client';
+import client from './graphQL/graphQL';
 import { AuthProvider } from './api/authorization';
+import '../styles/globals.css';
 
-export default function App({ Component, pageProps }) {
+function MyApp({ Component, pageProps }) {
   return (
-    <AuthProvider>
-      <Component {...pageProps} />
-    </AuthProvider>
+    <ApolloProvider client={client}>
+      <AuthProvider>
+        <Component {...pageProps} />
+      </AuthProvider>
+    </ApolloProvider>
   );
 }
+
+export default MyApp;

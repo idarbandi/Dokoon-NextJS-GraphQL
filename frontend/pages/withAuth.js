@@ -1,29 +1,30 @@
 // withAuth.js
 import React, { useEffect } from 'react';
 import Router from 'next/router';
-import { useMachine } from '@xstate/react';
 import { useQuery } from '@apollo/client';
-import authMachine from './authMachine';
-import { userDetails } from './graphQL/graphQL'; // Import the userDetails query
+import { userDetails } from './graphQL/graphQL';
 
 const withAuth = (WrappedComponent) => {
   return (props) => {
-    const [state, send] = useMachine(authMachine);
-    const { data, loading, error } = useQuery(userDetails); // Execute the userDetails query
+    const { data, loading, error } = useQuery(userDetails, {
+      fetchPolicy: 'network-only',
+      ssr: false,
+    });
 
     useEffect(() => {
-      if (loading) return; // If the query is still loading, do nothing
-
-      if (error || !data?.userDetails?.username) {
-        send({ type: 'LOGOUT' });
-        Router.push('/login'); // Redirect to login if not authenticated
-      } else {
-        send({ type: 'LOGIN' });
+      if (!loading) {
+        if (error || !data?.userDetails) {
+          Router.push('/Signin');
+        }
       }
-    }, [data, loading, error, send]);
+    }, [data, loading, error]);
 
-    if (state.matches('loggedOut')) {
-      return null; // Or you can render a loading spinner
+    if (loading) {
+      return <p>Loading...</p>;
+    }
+
+    if (error || !data?.userDetails) {
+      return null;
     }
 
     return <WrappedComponent {...props} />;
