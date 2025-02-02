@@ -1,12 +1,15 @@
 /** ********************************************************************************
- * Dokoon Project
- * Author: Idarbandi
- * GitHub: https://github.com/idarbandi/Dokoon-NextDRF
- * Email: darbandidr99@gmail.com
+ * 🌐 Dokoon-NextJS-GraphQL
+ * 👤 Author: idarbandi
+ * 📁 GitHub: https://github.com/idarbandi/Dokoon-NextJS-GraphQL
+ * ✉️ Email: darbandidr99@gmail.com
+ * 💼 LinkedIn: https://www.linkedin.com/in/amir-darbandi-72526b25b/
+ * 🖥 Framework: NextJS
  *
- * This project was developed by Idarbandi.
+ * This project was developed by idarbandi.
  * We hope you find it useful! Contributions and feedback are welcome.
- * ****************************************************************************** */
+ * ********************************************************************************
+ */
 
 import { makeStyles } from '@material-ui/core/styles';
 import DokoonHeader from '../components/header';
@@ -18,7 +21,7 @@ import Link from 'next/link';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
-import { DokoonIndexData } from './graphQL/graphQL';
+import { dokoonIndexData } from '../graphQL/graphQL';
 
 // استایل‌های صفحه اصلی
 const useDokoonHomeStyles = makeStyles((theme) => ({
@@ -44,12 +47,12 @@ function DokoonHome({ posts, categories }) {
   const classes = useDokoonHomeStyles();
 
   if (!posts || !categories) {
-    return <Typography>Loading...</Typography>;
+    return <Typography>در حال بارگذاری...</Typography>;
   }
 
   return (
     <>
-      <DokoonHeader data={categories} /> {/* Pass categories to DokoonHeader */}
+      <DokoonHeader data={categories} /> {/* پاس دادن دسته‌بندی‌ها به DokoonHeader */}
       <main>
         <Container className={classes.cardGrid} maxWidth="lg">
           <Grid container spacing={2}>
@@ -88,13 +91,13 @@ export async function getStaticProps() {
   let categories = [];
 
   try {
-    const { data } = await DokoonIndexData();
+    const { data } = await dokoonIndexData();
     posts = data.mainIndex;
     categories = data.categoryIndex;
 
-    console.log('GraphQL data:', data);
+    console.log('داده‌های GraphQL:', data);
   } catch (error) {
-    console.error('Error fetching data:', error);
+    console.error('خطا در دریافت داده‌ها:', error);
     return {
       props: {
         posts: [],

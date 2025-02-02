@@ -1,12 +1,17 @@
-"""********************************************************************************
- * Dokoon Project
- * Author: Idarbandi
- * GitHub: https://github.com/idarbandi/Dokoon-NextDRF
- * Email: darbandidr99@gmail.com
+"""
+********************************************************************************
+ * 🌐 Dokoon-NextJS-GraphQL
+ * 👤 Author: idarbandi
+ * 📁 GitHub: https://github.com/idarbandi/Dokoon-NextJS-GraphQL
+ * ✉️ Email: darbandidr99@gmail.com
+ * 💼 LinkedIn: https://www.linkedin.com/in/amir-darbandi-72526b25b/
  *
- * This project was developed by Idarbandi.
+ * This project was developed by idarbandi.
  * We hope you find it useful! Contributions and feedback are welcome.
- *********************************************************************************"""
+ ********************************************************************************
+"""
+
+# این فایل مدل‌های دیتابیس برای اپلیکیشن فروشگاه دکون رو تعریف می‌کنه
 
 from django.db import models
 from django.urls import reverse
@@ -14,15 +19,16 @@ from django.utils.translation import gettext_lazy as _
 from mptt.models import MPTTModel, TreeForeignKey
 
 
+# مدل دسته‌بندی محصولات دکون
 class DokoonCategory(MPTTModel):
     name = models.CharField(
-        verbose_name=_("Category Name"),
-        help_text=_("Make Sure To Fill It"),
+        verbose_name=_("نام دسته‌بندی"),
+        help_text=_("نام دسته‌بندی رو اینجا وارد کن"),
         max_length=255,
         unique=True,
     )
     slug = models.SlugField(
-        verbose_name=_("Category Safe Url"), max_length=255, unique=True
+        verbose_name=_("آدرس امن دسته‌بندی"), max_length=255, unique=True
     )
     parent = TreeForeignKey(
         "self", on_delete=models.CASCADE, null=True, blank=True, related_name="children"
@@ -33,106 +39,126 @@ class DokoonCategory(MPTTModel):
         order_insertion_by = ["name"]
 
     class Meta:
-        verbose_name = _("Category")
-        verbose_name_plural = _("Categories")
+        verbose_name = _("دسته‌بندی")
+        verbose_name_plural = _("دسته‌بندی‌ها")
 
     def get_absolute_url(self):
+        # این متد آدرس مطلق دسته‌بندی رو برمی‌گردونه
         return reverse("store:category_list", args={"pk": self.pk})
 
     def __str__(self):
+        # نمایش نام دسته‌بندی در ادمین
         return self.name
+
+# مدل نوع محصول دکون
 
 
 class DokoonProductType(models.Model):
     name = models.CharField(
-        verbose_name=_("Product Name"), help_text=_("Required"), max_length=255
+        verbose_name=_("نام نوع محصول"), help_text=_("اسم نوع محصول رو وارد کن"), max_length=255
     )
     is_active = models.BooleanField(default=True)
 
     class Meta:
-        verbose_name = _("Product Type")
-        verbose_name_plural = _("Product Types")
+        verbose_name = _("نوع محصول")
+        verbose_name_plural = _("انواع محصولات")
 
     def __str__(self):
         return self.name
+
+# مدل مشخصات محصولات دکون
 
 
 class DokoonProductSpecification(models.Model):
     product_type = models.ForeignKey(
-        DokoonProductType, on_delete=models.RESTRICT)
+        DokoonProductType, on_delete=models.RESTRICT
+    )
     name = models.CharField(
-        verbose_name=_("Name"), help_text=_("Required"), max_length=255
+        verbose_name=_("نام مشخصه"), help_text=_("نام مشخصه رو وارد کن"), max_length=255
     )
 
     class Meta:
-        verbose_name = _("Product Specification")
-        verbose_name_plural = _("Product Specifications")
+        verbose_name = _("مشخصات محصول")
+        verbose_name_plural = _("مشخصات محصولات")
 
     def __str__(self):
         return self.name
 
+# مدل محصول دکون
+
 
 class DokoonProduct(models.Model):
     product_type = models.ForeignKey(
-        DokoonProductType, on_delete=models.RESTRICT)
+        DokoonProductType, on_delete=models.RESTRICT
+    )
     category = models.ForeignKey(
-        DokoonCategory, on_delete=models.RESTRICT, related_name='product_category')
+        DokoonCategory, on_delete=models.RESTRICT, related_name='product_category'
+    )
     title = models.CharField(
-        verbose_name=_("Title"), help_text=_("Required"), max_length=255
+        verbose_name=_("عنوان محصول"), help_text=_("عنوان محصول رو وارد کن"), max_length=255
     )
     description = models.TextField(
-        verbose_name=_("Description"), help_text=_("Not Required"), blank=True
+        verbose_name=_("توضیحات محصول"), help_text=_("توضیحات محصول (اختیاری)"), blank=True
     )
     slug = models.SlugField(max_length=255)
     regular_price = models.DecimalField(
-        verbose_name=_("Regular Price"),
-        help_text=_("Maximum 999.99"),
-        error_messages={"name": {"The Price Must Be Between 0 , 999,99"}},
+        verbose_name=_("قیمت عادی"),
+        help_text=_("قیمت عادی محصول (حداکثر 999.99)"),
+        error_messages={"name": {"The price must be between 0 and 999.99"}},
         max_digits=5,
         decimal_places=2,
     )
     discount_price = models.DecimalField(
-        verbose_name=_("Discount Price"),
-        help_text=_("Maximum 999.99"),
-        error_messages={"name": {"The Discount Must Be Between 0 , 999,99"}},
+        verbose_name=_("قیمت تخفیف‌خورده"),
+        help_text=_("قیمت با تخفیف محصول (حداکثر 999.99)"),
+        error_messages={"name": {"The discount must be between 0 and 999.99"}},
         max_digits=5,
         decimal_places=2,
     )
     is_active = models.BooleanField(
-        verbose_name=_("Product Visibility"),
-        help_text=_("Change Product Visibility"),
+        verbose_name=_("نمایش محصول"),
+        help_text=_("آیا محصول فعال باشد یا نه"),
         default=True,
     )
     created_at = models.DateTimeField(
-        _("Created at"), auto_now_add=True, editable=False
+        _("تاریخ ایجاد"), auto_now_add=True, editable=False
     )
-    updated_at = models.DateTimeField(_("Updated at"), auto_now=True)
+    updated_at = models.DateTimeField(_("تاریخ به‌روزرسانی"), auto_now=True)
 
     class Meta:
         ordering = ("-created_at",)
-        verbose_name = _("Product")
-        verbose_name_plural = _("Products")
+        verbose_name = _("محصول")
+        verbose_name_plural = _("محصولات")
 
     def get_absolute_url(self):
+        # این متد آدرس مطلق محصول رو برمی‌گردونه
         return reverse("store:product_detail", args=[self.slug])
 
     def __str__(self):
         return self.title
 
+# مدل مقادیر مشخصات محصول دکون
+
 
 class DokoonProductSpecificationValue(models.Model):
     product = models.ForeignKey(DokoonProduct, on_delete=models.CASCADE)
     specification = models.ForeignKey(
-        DokoonProductSpecification, on_delete=models.RESTRICT)
+        DokoonProductSpecification, on_delete=models.RESTRICT
+    )
     value = models.CharField(
-        verbose_name=_("Value"),
-        help_text=_("Product Specification Value (Maximum of 255 Words)"),
+        verbose_name=_("مقدار"),
+        help_text=_("مقدار مشخصه محصول (حداکثر 255 کاراکتر)"),
         max_length=255,
     )
 
     class Meta:
-        verbose_name = _("Product Specification Value")
-        verbose_name_plural = _("Product Specification Values")
+        verbose_name = _("مقدار مشخصات محصول")
+        verbose_name_plural = _("مقادیر مشخصات محصولات")
+
+    def __str__(self):
+        return f"{self.specification.name}: {self.value}"
+
+# مدل تصاویر محصولات دکون
 
 
 class DokoonProductImage(models.Model):
@@ -140,14 +166,14 @@ class DokoonProductImage(models.Model):
         DokoonProduct, on_delete=models.CASCADE, related_name="product_image"
     )
     image = models.ImageField(
-        verbose_name=_("image"),
-        help_text=_("Upload a Products Image"),
+        verbose_name=_("تصویر محصول"),
+        help_text=_("یک تصویر برای محصول آپلود کن"),
         upload_to="images/",
         default="images/default.png",
     )
     alt_text = models.CharField(
-        verbose_name=_("Image Alternative Text"),
-        help_text=_("Provide descriptive text for the image"),
+        verbose_name=_("متن جایگزین"),
+        help_text=_("متن جایگزین برای تصویر (برای SEO)"),
         max_length=255,
         blank=True,
         null=True,
@@ -157,8 +183,8 @@ class DokoonProductImage(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = _("Product Image")
-        verbose_name_plural = _("Product Images")
+        verbose_name = _("تصویر محصول")
+        verbose_name_plural = _("تصاویر محصولات")
 
     def __str__(self):
-        return f"Image for {self.product.title}"
+        return f"تصویر مربوط به {self.product.title}"

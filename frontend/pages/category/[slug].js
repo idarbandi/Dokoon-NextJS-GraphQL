@@ -1,12 +1,15 @@
 /** ********************************************************************************
- * Dokoon Project
- * Author: Idarbandi
- * GitHub: https://github.com/idarbandi/Dokoon-NextDRF
- * Email: darbandidr99@gmail.com
+ * 🌐 Dokoon-NextJS-GraphQL
+ * 👤 Author: idarbandi
+ * 📁 GitHub: https://github.com/idarbandi/Dokoon-NextJS-GraphQL
+ * ✉️ Email: darbandidr99@gmail.com
+ * 💼 LinkedIn: https://www.linkedin.com/in/amir-darbandi-72526b25b/
+ * 🖥 Framework: NextJS
  *
- * This project was developed by Idarbandi.
+ * This project was developed by idarbandi.
  * We hope you find it useful! Contributions and feedback are welcome.
- * ****************************************************************************** */
+ * ********************************************************************************
+ */
 
 import React from 'react';
 import Head from 'next/head';
@@ -22,10 +25,10 @@ import Link from 'next/link';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
-import { DokoonCategorySlug } from '../graphQL/graphQL';
-import client from '../graphQL/graphQL';
+import { DokoonCategorySlug } from '../../graphQL/graphQL';
+import client from '../../graphQL/graphQL';
 
-// استایل‌های این صفحه (با نام DokoonCategory)
+// استایل‌های این صفحه
 const useDokoonCategoryStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -48,7 +51,7 @@ const useDokoonCategoryStyles = makeStyles((theme) => ({
 }));
 
 // کامپوننت صفحه دسته‌بندی
-const CategoryPage = ({ category, posts }) => {
+const DokoonCategoryPage = ({ category, posts }) => {
   const classes = useDokoonCategoryStyles();
   const router = useRouter();
 
@@ -57,7 +60,7 @@ const CategoryPage = ({ category, posts }) => {
   }
 
   if (!category) {
-    return <Typography>دسته بندی یافت نشد.</Typography>;
+    return <Typography>دسته‌بندی یافت نشد.</Typography>;
   }
 
   return (
@@ -98,6 +101,7 @@ const CategoryPage = ({ category, posts }) => {
   );
 };
 
+// گرفتن مسیرهای استاتیک
 export async function getStaticPaths() {
   let paths = [];
 
@@ -123,7 +127,7 @@ export async function getStaticPaths() {
   };
 }
 
-
+// گرفتن داده‌های استاتیک
 export async function getStaticProps({ params }) {
   let category = null;
   let posts = [];
@@ -145,7 +149,7 @@ export async function getStaticProps({ params }) {
   } catch (error) {
     console.error('Error fetching category data:', error);
     return {
-      notFound: true, // This will render the 404 page
+      notFound: true, // این صفحه 404 را نمایش می‌دهد
     };
   }
 
@@ -158,4 +162,4 @@ export async function getStaticProps({ params }) {
   };
 }
 
-export default CategoryPage;
+export default DokoonCategoryPage;

@@ -7,6 +7,20 @@ import List from '@material-ui/core/List';
 import Link from 'next/link';
 import { useRouter } from 'next/router'; // Import useRouter
 
+/**
+ * ********************************************************************************
+ * 🌐 Dokoon-NextJS-GraphQL
+ * 👤 Author: idarbandi
+ * 📁 GitHub: https://github.com/idarbandi/Dokoon-NextJS-GraphQL
+ * ✉️ Email: darbandidr99@gmail.com
+ * 💼 LinkedIn: https://www.linkedin.com/in/amir-darbandi-72526b25b/
+ * 🖥 Framework: NextJS
+ *
+ * This project was developed by idarbandi.
+ * We hope you find it useful! Contributions and feedback are welcome.
+ * ********************************************************************************
+ */
+
 const useDokoonStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -78,14 +92,16 @@ const useDokoonStyles = makeStyles((theme) => ({
   },
 }));
 
+// کامپوننت DokoonListItem برای نمایش آیتم‌های لیست منو
 const DokoonListItem = forwardRef((props, ref) => {
   return <li ref={ref} {...props} />;
 });
 
-export default function Header({ data }) {
+// کامپوننت هدر اصلی
+export default function DokoonHeader({ data }) {
   const classes = useDokoonStyles();
   const listItemRef = useRef();
-  const router = useRouter(); // Access the router
+  const router = useRouter(); // دسترسی به روتر برای دریافت اسلاگ فعلی
 
   useEffect(() => {
     if (listItemRef.current) {
@@ -95,10 +111,10 @@ export default function Header({ data }) {
 
   if (!Array.isArray(data)) {
     console.error('Data is not an array:', data);
-    return null; // Render nothing or a fallback component
+    return null; // رندر کردن هیچ چیزی یا کامپوننت جایگزین
   }
 
-  // Get the current category slug from the URL
+  // دریافت اسلاگ دسته‌بندی فعلی از URL
   const currentCategorySlug = router.query.slug || '';
 
   return (
@@ -109,7 +125,7 @@ export default function Header({ data }) {
         </Container>
       </AppBar>
       <AppBar position="static" elevation={0} className={classes.appbarMain}>
-        <Container maxWidth="g">
+        <Container maxWidth="lg">
           <Toolbar className={classes.toolbarMain}>
             <Link href="/" passHref legacyBehavior>
               <a>
@@ -134,18 +150,18 @@ export default function Header({ data }) {
           <Toolbar className={classes.toolbarSecondary}>
             <List className={classes.menuList}>
               {data.map((category) => {
-                // Check if the category name matches the current slug
+                // بررسی اینکه آیا نام دسته‌بندی با اسلاگ فعلی مطابقت دارد
                 const isActive = category.name.toLowerCase() === currentCategorySlug.toLowerCase();
 
                 return (
                   <DokoonListItem key={category.name} className={classes.menuListItem} ref={listItemRef}>
                     {isActive ? (
-                      // Render as plain text if on the current category page
+                      // نمایش به عنوان متن ساده اگر در صفحه دسته‌بندی فعلی باشد
                       <span className={classes.activeCategory} aria-current="page">
                         {category.name}
                       </span>
                     ) : (
-                      // Render as link if not on the current category page
+                      // نمایش به عنوان لینک اگر در صفحه دسته‌بندی فعلی نباشد
                       <Link href={`/category/${category.name}`} passHref legacyBehavior>
                         <a className={classes.listItemLink}>{category.name}</a>
                       </Link>

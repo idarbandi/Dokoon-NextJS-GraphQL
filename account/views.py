@@ -1,91 +1,87 @@
-"""********************************************************************************
- * Dokoon Project
- * Author: Idarbandi
- * GitHub: https://github.com/idarbandi/Dokoon-NextDRF
- * Email: darbandidr99@gmail.com
+"""
+********************************************************************************
+ * 🌐 Dokoon-NextJS-GraphQL
+ * 👤 Author: idarbandi
+ * 📁 GitHub: https://github.com/idarbandi/Dokoon-NextJS-GraphQL
+ * ✉️ Email: darbandidr99@gmail.com
+ * 💼 LinkedIn: https://www.linkedin.com/in/amir-darbandi-72526b25b/
  *
- * This project was developed by Idarbandi.
+ * This project was developed by idarbandi.
  * We hope you find it useful! Contributions and feedback are welcome.
- *********************************************************************************
-
+ ********************************************************************************
 """
 
-# این فایل نما‌های مربوط به برنامه account را تعریف می‌کند.
-# (This file defines the views for the account application.)
+# این فایل ویوهای مربوط به برنامه حساب کاربری دکون رو تعریف می‌کنه
 
 import json
 
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
+from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-from rest_framework.authentication import SessionAuthentication
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.views import APIView
 
 
-# تابعی برای دریافت توکن CSRF و تنظیم کوکی آن
-# (Function to get CSRF token and set its cookie)
-def get_csrf(request):
-
+# تابعی برای گرفتن توکن CSRF و ارسالش به کلاینت
+def dokoon_get_csrf_token(request):
+    # توکن CSRF رو می‌گیریم
     token = get_token(request)
-    print("CSRF Token sent to client:", token)  # Log CSRF token sent to client
+    print("CSRF Token sent to client:", token)  # نمایش توکن CSRF در لاگ سرور
+    # توکن رو به صورت JSON می‌فرستیم
     return JsonResponse({'csrfToken': token})
-    # response = JsonResponse(
-    #     {'اطلاعات': "کوکی CSRF با موفقیت تنظیم شد"})  # Info in Farsi
-    # response['X-CSRFToken'] = get_token(request)
-    # return response
+
+# ویوی لاگین کاربر
 
 
-# نما (view) برای ورود به سیستم
-# (View for login)
 @require_POST
-def Login_view(request):
-    # دریافت اطلاعات ورود از بدنه درخواست (request body)
-    # (Get login information from request body)
+def dokoon_login_view(request):
+    # اطلاعات کاربر (نام کاربری و رمز عبور) رو از بدنه درخواست می‌گیریم
     data = json.loads(request.body)
     username = data.get('username')
     password = data.get('password')
 
-    # بررسی صحت اطلاعات ورود
-    # (Validate login information)
+    # چک می‌کنیم که نام کاربری و رمز عبور وارد شده باشن
     if username is None or password is None:
         return JsonResponse(
-            {"اطلاعات": "نام کاربری و رمز عبور الزامی هستند"}  # Info in Farsi
+            {"پیام": "نام کاربری و رمز عبور الزامی هستند"},
+            status=400
         )
+
+    # احراز هویت کاربر
     user = authenticate(username=username, password=password)
 
-    # کاربر یافت نشد
-    # (User not found)
+    # اگه کاربر وجود نداشت یا اطلاعات نادرست بود
     if user is None:
         return JsonResponse({
-            "اطلاعات": "کاربر وجود ندارد"
+            "پیام": "نام کاربری یا رمز عبور اشتباه است"
         }, status=400)
 
     # ورود کاربر به سیستم
-    # (Login user)
     login(request, user)
     return JsonResponse({
-        "اطلاعات": "کاربر با موفقیت وارد سیستم شد"
+        "پیام": "با موفقیت وارد شدید"
     })
 
-
-# نمای who_am_i برای بازیابی اطلاعات کاربر لاگین‌شده
-# (who_am_i view to retrieve logged-in user information)
-class who_am_i_view(APIView):
-    authentication_classes = [SessionAuthentication]
-    permission_classes = [IsAuthenticated]
-
-    # متد get برای بازیابی اطلاعات کاربر
-    # (get method to retrieve user information)
-    @staticmethod
-    def get(request, format=None):
-        return JsonResponse({
-            'username': request.user.username
-        })
+# ویوی اطلاعات کاربر وارد شده
 
 
-def Logout_view(request):
+class dokoon_who_am_i_view(View):
+    # متد GET برای دریافت اطلاعات کاربر
+    def get(self, request):
+        if request.user.is_authenticated:
+            return JsonResponse({
+                'username': request.user.username
+            })
+        else:
+            return JsonResponse({
+                'پیام': 'کاربری وارد نشده است'
+            }, status=401)
+
+# ویوی لاگ‌اوت کاربر
+
+
+def dokoon_logout_view(request):
+    # خروج کاربر از سیستم
     logout(request)
-    return JsonResponse({'detail': 'Successfully logged out'})
+    return JsonResponse({'پیام': 'با موفقیت خارج شدید'})

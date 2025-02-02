@@ -1,15 +1,19 @@
-# -*- coding: utf-8 -*-  # Important: Add this encoding declaration
+"""
+********************************************************************************
+ * 🌐 Dokoon-NextJS-GraphQL
+ * 👤 Author: idarbandi
+ * 📁 GitHub: https://github.com/idarbandi/Dokoon-NextJS-GraphQL
+ * ✉️ Email: darbandidr99@gmail.com
+ * 💼 LinkedIn: https://www.linkedin.com/in/amir-darbandi-72526b25b/
+ *
+ * This project was developed by idarbandi.
+ * We hope you find it useful! Contributions and feedback are welcome.
+ ********************************************************************************
+"""
 
-"""
-###############################################################
-# اسکرین شات‌گیر وب‌سایت                                      #
-# ابزاری برای گرفتن اسکرین شات از صفحات وب‌سایت‌های مختلف      #
-###############################################################
-"""
+# این اسکرین شات‌گیر ابزاری برای گرفتن اسکرین شات از صفحات وب‌سایت‌های مختلف است
 
 # کتابخانه‌های مورد نیاز
-
-
 import os
 import time
 
@@ -19,13 +23,13 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 
-def take_screenshots(base_url, pages, output_dir="screenshots"):
+def dokoon_take_screenshots(base_url, pages, output_dir="screenshots"):
     """
     این تابع اسکرین شات از صفحات مشخص‌شده یک وب‌سایت می‌گیرد.
 
     Args:
-        base_url(str): آدرس پایه وب‌سایت(مثال: "http://localhost:3000").
-        pages(list): لیستی از مسیرهای صفحات(مثال: ["/", "/login", "/products/1"]).
+        base_url(str): آدرس پایه وب‌سایت (مثال: "http://localhost:3000").
+        pages(list): لیستی از مسیرهای صفحات (مثال: ["/", "/login", "/products/1"]).
         output_dir(str, optional): مسیر خروجی برای ذخیره اسکرین شات‌ها. مقدار پیش‌فرض "screenshots" است.
     """
 
@@ -70,13 +74,12 @@ if __name__ == "__main__":
         "/dashboard",
         "/category/some-category"
     ]
-    take_screenshots(base_url, pages_to_capture)
+    dokoon_take_screenshots(base_url, pages_to_capture)
 
     base_url_backend = "http://localhost:8000"
     pages_to_capture_backend = [
         "/admin/",
-        "/api/v1/products/",
         "/account/login/",
         "/account/logout/",
     ]
-    take_screenshots(base_url_backend, pages_to_capture_backend)
+    dokoon_take_screenshots(base_url_backend, pages_to_capture_backend)

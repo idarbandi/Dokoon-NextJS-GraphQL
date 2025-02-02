@@ -2,16 +2,31 @@
 import React, { useState } from 'react';
 import { Container, TextField, Button, Grid, Typography, Avatar, Box } from '@mui/material';
 import { LockOutlined as LockOutlinedIcon } from '@mui/icons-material';
-import { useAuthentication } from './api/authorization';
+import { useDokoonAuthentication } from './api/authorization'; // Updated import
 
-const SignIn = () => {
+/**
+ * ********************************************************************************
+ * 🌐 Dokoon-NextJS-GraphQL
+ * 👤 Author: idarbandi
+ * 📁 GitHub: https://github.com/idarbandi/Dokoon-NextJS-GraphQL
+ * ✉️ Email: darbandidr99@gmail.com
+ * 💼 LinkedIn: https://www.linkedin.com/in/amir-darbandi-72526b25b/
+ * 🖥 Framework: NextJS
+ *
+ * This project was developed by idarbandi.
+ * We hope you find it useful! Contributions and feedback are welcome.
+ * ********************************************************************************
+ */
+
+// کامپوننت ورود به سیستم
+const DokoonSignIn = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const { signIn, error } = useAuthentication();
+  const { dokoon_signIn, error } = useDokoonAuthentication(); // Updated function names
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    signIn({ username, password });
+    dokoon_signIn({ username, password }); // Updated function names
   };
 
   return (
@@ -21,7 +36,7 @@ const SignIn = () => {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Sign in
+          ورود به سیستم
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
@@ -30,7 +45,7 @@ const SignIn = () => {
             required
             fullWidth
             id="username"
-            label="Username"
+            label="نام کاربری"
             name="username"
             autoComplete="username"
             autoFocus
@@ -42,14 +57,14 @@ const SignIn = () => {
             required
             fullWidth
             name="password"
-            label="Password"
+            label="رمز عبور"
             type="password"
             id="password"
             autoComplete="current-password"
             onChange={(e) => setPassword(e.target.value)}
           />
           <Button type="submit" fullWidth variant="contained" color="primary" sx={{ mt: 3, mb: 2 }}>
-            Sign In
+            ورود
           </Button>
           {error && <Typography color="error">{error}</Typography>}
         </Box>
@@ -58,4 +73,4 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
+export default DokoonSignIn;

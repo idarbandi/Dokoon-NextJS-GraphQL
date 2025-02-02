@@ -1,70 +1,96 @@
-"""********************************************************************************
- * Dokoon Project
- * Author: Idarbandi
- * GitHub: https://github.com/idarbandi/Dokoon-NextDRF
- * Email: darbandidr99@gmail.com
- *
- * This project was developed by Idarbandi.
- * We hope you find it useful! Contributions and feedback are welcome.
- *********************************************************************************
 """
+********************************************************************************
+ * 🌐 Dokoon Project
+ * 👤 Author: idarbandi
+ * 📁 GitHub: https://github.com/idarbandi/Dokoon-NextJS-GraphQL
+ * ✉️ Email: darbandidr99@gmail.com
+ * 💼 LinkedIn: https://www.linkedin.com/in/amir-darbandi-72526b25b/
+ *
+ * This project was developed by idarbandi.
+ * We hope you find it useful! Contributions and feedback are welcome.
+ ********************************************************************************
+"""
+
+# این فایل تنظیمات مربوط به بخش ادمین اپلیکیشن فروشگاه دکون رو مدیریت می‌کنه
 
 from django.contrib import admin
 from mptt.admin import MPTTModelAdmin
 
-from .models import DokoonCategory  # Corrected model name
-from .models import DokoonProduct  # Corrected model name
-from .models import DokoonProductImage  # Corrected model name
-from .models import DokoonProductSpecification  # Corrected model name
-from .models import DokoonProductSpecificationValue  # Corrected model name
-from .models import DokoonProductType  # Corrected model name
+from .models import (
+    DokoonCategory,
+    DokoonProduct,
+    DokoonProductImage,
+    DokoonProductSpecification,
+    DokoonProductSpecificationValue,
+    DokoonProductType,
+)
 
 
-# Register DokoonCategory with MPTTModelAdmin
-@admin.register(DokoonCategory)  # Corrected model name
-class DokoonCategoryAdmin(MPTTModelAdmin):  # Created a custom admin class
-    list_display = ('name', 'parent', 'is_active')  # Display relevant fields
-    list_filter = ('is_active',)  # Add filters for easier management
-    search_fields = ('name',)  # Add search field
-    prepopulated_fields = {'slug': ('name',)}  # Automatically fill slug field
+# ثبت مدل DokoonCategory در بخش ادمین با استفاده از MPTTModelAdmin
+@admin.register(DokoonCategory)
+class DokoonCategoryAdmin(MPTTModelAdmin):
+    # فیلدهایی که در لیست دسته‌بندی‌ها نمایش داده می‌شن
+    list_display = ('name', 'parent', 'is_active')
+    # افزودن فیلتر برای فعال یا غیرفعال بودن دسته‌بندی
+    list_filter = ('is_active',)
+    # امکان جستجو بر اساس نام دسته‌بندی
+    search_fields = ('name',)
+    # ساخت خودکار فیلد slug بر اساس نام
+    prepopulated_fields = {'slug': ('name',)}
+
+# تعریف Inline برای مشخصات محصول
 
 
-# Inline admin for Product Specifications
 class DokoonProductSpecificationInline(admin.TabularInline):
     model = DokoonProductSpecification
-    extra = 1  # allows adding new specifications directly in the admin panel
+    # اجازه افزودن مشخصات جدید در پنل ادمین
+    extra = 1
+
+# ثبت مدل DokoonProductType در بخش ادمین
 
 
 @admin.register(DokoonProductType)
 class DokoonProductTypeAdmin(admin.ModelAdmin):
+    # اضافه کردن مشخصات محصول به صورت Inline
     inlines = [DokoonProductSpecificationInline]
-    list_display = ('name', 'is_active')  # Display relevant fields
-    list_filter = ('is_active',)  # Add filters for easier management
-    search_fields = ('name',)  # Add search field
+    # فیلدهایی که در لیست نوع محصولات نمایش داده می‌شن
+    list_display = ('name', 'is_active')
+    # افزودن فیلتر برای فعال یا غیرفعال بودن نوع محصول
+    list_filter = ('is_active',)
+    # امکان جستجو بر اساس نام نوع محصول
+    search_fields = ('name',)
 
-# Inline admin for Product Images
+# تعریف Inline برای تصاویر محصول
 
 
 class DokoonProductImageInline(admin.TabularInline):
     model = DokoonProductImage
-    extra = 1  # allows adding new images directly in the admin panel
+    # اجازه افزودن تصاویر جدید در پنل ادمین
+    extra = 1
+
+# تعریف Inline برای مقادیر مشخصات محصول
 
 
-# Inline admin for Product Specification Values
 class DokoonProductSpecificationValueInline(admin.StackedInline):
     model = DokoonProductSpecificationValue
-    extra = 1  # allows adding new specification values directly in the admin panel
+    # اجازه افزودن مقادیر جدید برای مشخصات محصول
+    extra = 1
+
+# ثبت مدل DokoonProduct در بخش ادمین
 
 
 @admin.register(DokoonProduct)
 class DokoonProductAdmin(admin.ModelAdmin):
+    # اضافه کردن Inline‌های مربوط به تصاویر و مشخصات محصول
     inlines = [
         DokoonProductSpecificationValueInline,
         DokoonProductImageInline,
     ]
-    list_display = ('title', 'category', 'regular_price',
-                    'is_active')  # More fields for overview
-    # Filters for easier management
+    # فیلدهایی که در لیست محصولات نمایش داده می‌شن
+    list_display = ('title', 'category', 'regular_price', 'is_active')
+    # افزودن فیلتر برای دسته‌بندی، وضعیت فعال بودن و نوع محصول
     list_filter = ('category', 'is_active', 'product_type')
-    search_fields = ('title', 'description')  # Add search fields
-    prepopulated_fields = {'slug': ('title',)}  # Automatically fill slug field
+    # امکان جستجو بر اساس عنوان و توضیحات محصول
+    search_fields = ('title', 'description')
+    # ساخت خودکار فیلد slug بر اساس عنوان
+    prepopulated_fields = {'slug': ('title',)}

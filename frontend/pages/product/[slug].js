@@ -1,16 +1,19 @@
 /** ********************************************************************************
- * Dokoon Project
- * Author: Idarbandi
- * GitHub: https://github.com/idarbandi/Dokoon-NextDRF
- * Email: darbandidr99@gmail.com
+ * 🌐 Dokoon-NextJS-GraphQL
+ * 👤 Author: idarbandi
+ * 📁 GitHub: https://github.com/idarbandi/Dokoon-NextJS-GraphQL
+ * ✉️ Email: darbandidr99@gmail.com
+ * 💼 LinkedIn: https://www.linkedin.com/in/amir-darbandi-72526b25b/
+ * 🖥 Framework: NextJS
  *
- * This project was developed by Idarbandi.
+ * This project was developed by idarbandi.
  * We hope you find it useful! Contributions and feedback are welcome.
- * ****************************************************************************** */
+ * ********************************************************************************
+ */
 
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import Header from '../../components/header';
+import DokoonHeader from '../../components/header';
 import Container from '@material-ui/core/Container';
 import { gql } from '@apollo/client';
 import { makeStyles } from '@material-ui/core/styles';
@@ -19,9 +22,9 @@ import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Hidden from '@material-ui/core/Hidden';
 import Typography from '@material-ui/core/Typography';
-import { DokoonProductSlug } from '../graphQL/graphQL';
+import { dokoonProductSlug } from '../../graphQL/graphQL';
 
-// استایل‌های این صفحه (با نام Dokoon)
+// استایل‌های این صفحه
 const useDokoonProductStyles = makeStyles((theme) => ({
   // Prefixed styles
   root: {
@@ -60,7 +63,7 @@ const useDokoonProductStyles = makeStyles((theme) => ({
 }));
 
 // کامپوننت صفحه محصول
-function ProductPage({ post, categories }) {
+function DokoonProductPage({ post, categories }) {
   const classes = useDokoonProductStyles();
   const router = useRouter();
 
@@ -77,7 +80,7 @@ function ProductPage({ post, categories }) {
       <Head>
         <title>{post.title}</title>
       </Head>
-      <Header data={categories} />
+      <DokoonHeader data={categories} />
       <Container>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6}>
@@ -101,6 +104,7 @@ function ProductPage({ post, categories }) {
   );
 }
 
+// گرفتن مسیرهای استاتیک
 export async function getStaticPaths() {
   let paths = [];
 
@@ -117,7 +121,7 @@ export async function getStaticPaths() {
       params: { slug },
     }));
   } catch (error) {
-    // console.error('Error fetching paths:', error);
+    console.error('Error fetching paths:', error);
   }
 
   return {
@@ -126,17 +130,14 @@ export async function getStaticPaths() {
   };
 }
 
+// گرفتن داده‌های استاتیک
 export async function getStaticProps({ params }) {
   let post = {};
   let categories = [];
 
   try {
-    const { data } = await DokoonProductSlug(params.slug);
+    const { data } = await dokoonProductSlug(params.slug);
     post = data.mainIndexByName;
-
-    // If you need to fetch categories, you can do it here
-    // const categoriesData = await client.query({ /* your categories query */ });
-    // categories = categoriesData.data.categories;
 
     console.log('GraphQL data:', data);
   } catch (error) {
@@ -155,4 +156,4 @@ export async function getStaticProps({ params }) {
   };
 }
 
-export default ProductPage;
+export default DokoonProductPage;

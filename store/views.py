@@ -1,65 +1,69 @@
-"""********************************************************************************
-* Dokoon Project                                                                 *
-* Author: Idarbandi                                                              *
-* GitHub: https://github.com/idarbandi/Dokoon-NextDRF                             *
-* Email: darbandidr99@gmail.com                                                    *
-*                                                                                *
-* This project was developed by Idarbandi.                                         *
-* We hope you find it useful! Contributions and feedback are welcome.             *
-********************************************************************************"""
+"""
+********************************************************************************
+ * 🌐 Dokoon-NextJS-GraphQL
+ * 👤 Author: idarbandi
+ * 📁 GitHub: https://github.com/idarbandi/Dokoon-NextJS-GraphQL
+ * ✉️ Email: darbandidr99@gmail.com
+ * 💼 LinkedIn: https://www.linkedin.com/in/amir-darbandi-72526b25b/
+ *
+ * This project was developed by idarbandi.
+ * We hope you find it useful! Contributions and feedback are welcome.
+ ********************************************************************************
+"""
+
+# این فایل ویوهای مربوط به فروشگاه دکون رو تعریف می‌کنه
 
 from django.shortcuts import render
-from rest_framework import generics
 
-from .models import DokoonCategory, DokoonProduct  # Import renamed models
-from .serializers import DokoonCategorySerializer, DokoonProductSerializer
+# ایمپورت مدل‌های مورد نیاز
+from .models import DokoonCategory, DokoonProduct
 
 
-class DokoonProductListView(generics.ListAPIView):
+# ویوی نمایش لیست محصولات
+def dokoon_product_list_view(request):
     """
-    نمايي براي نمايش ليست تمامي محصولات پروژه Dokoon.
+    ویویی برای نمایش لیست تمامی محصولات فروشگاه دکون.
 
-    خروجي اين نمايه، ليستي از محصولات سريال شده با DokoonProductSerializer است.
+    این ویو تمام محصولات را از دیتابیس استخراج و به قالب HTML ارسال می‌کند.
     """
-    queryset = DokoonProduct.objects.all()
-    serializer_class = DokoonProductSerializer
+    products = DokoonProduct.objects.all()
+    return render(request, "store/product_list.html", {"products": products})
+
+# ویوی نمایش جزئیات محصول
 
 
-class DokoonProductDetailView(generics.RetrieveAPIView):
+def dokoon_product_detail_view(request, slug):
     """
-    نمايي براي نمايش جزئيات يک محصول خاص بر اساس اسلاگ آن.
+    ویویی برای نمایش جزئیات یک محصول خاص بر اساس اسلاگ آن.
 
-    اين نمايه يک محصول را بر اساس اسلاگ آن از ديتابيس دريافت کرده و با استفاده از 
-    DokoonProductSerializer آن را سريال کرده و برمي‌گرداند.
+    این ویو محصولی خاص را از دیتابیس استخراج و به قالب HTML ارسال می‌کند.
     """
-    lookup_field = "slug"
-    queryset = DokoonProduct.objects.all()
-    serializer_class = DokoonProductSerializer
+    product = DokoonProduct.objects.get(slug=slug)
+    return render(request, "store/product_detail.html", {"product": product})
+
+# ویوی نمایش لیست محصولات یک دسته‌بندی خاص
 
 
-class DokoonCategoryProductListView(generics.ListAPIView):
+def dokoon_category_product_list_view(request, slug):
     """
-    نمايي براي نمايش ليست محصولات يک دسته بندي خاص و زيرمجموعه‌هاي آن.
+    ویویی برای نمایش لیست محصولات یک دسته‌بندی خاص و زیرمجموعه‌های آن.
 
-    اين نمايه بر اساس اسلاگ دريافتي از URL، ليستي از محصولات آن دسته بندي 
-    و تمامي زيرمجموعه‌هاي آن را فيلتر کرده و با استفاده از DokoonProductSerializer 
-    آنها را سريال کرده و برمي‌گرداند.
+    این ویو محصولات یک دسته‌بندی خاص را از دیتابیس استخراج و به قالب HTML ارسال می‌کند.
     """
-    serializer_class = DokoonProductSerializer
+    category = DokoonCategory.objects.get(slug=slug)
+    products = DokoonProduct.objects.filter(
+        category__in=category.get_descendants(include_self=True)
+    )
+    return render(request, "store/category_product_list.html", {"category": category, "products": products})
 
-    def get_queryset(self):
-        return DokoonProduct.objects.filter(
-            category__in=DokoonCategory.objects.get(
-                slug=self.kwargs["slug"]).get_descendants(include_self=True)
-        )
+# ویوی نمایش لیست دسته‌بندی‌ها
 
 
-class DokoonCategoryListView(generics.ListAPIView):
+def dokoon_category_list_view(request):
     """
-    نمايي براي نمايش ليست تمامي دسته بندي‌هاي سطح يک پروژه Dokoon.
+    ویویی برای نمایش لیست تمامی دسته‌بندی‌های سطح یک فروشگاه دکون.
 
-    خروجي اين نمايه، ليستي از دسته بندي‌هاي سطح يک سريال شده با 
-    DokoonCategorySerializer است.
+    این ویو تمام دسته‌بندی‌ها را از دیتابیس استخراج و به قالب HTML ارسال می‌کند.
     """
-    queryset = DokoonCategory.objects.filter(level=1)
-    serializer_class = DokoonCategorySerializer
+    categories = DokoonCategory.objects.filter(level=1)
+    return render(request, "store/category_list.html", {"categories": categories})
