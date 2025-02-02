@@ -36,3 +36,45 @@ This project evolves from **[Dokoon-NextDRF](https://github.com/idarbandi/Dokoon
 ```bash
 git clone https://github.com/idarbandi/Dokoon-NextJS-GraphQL.git
 cd Dokoon-NextJS-GraphQL
+
+2. Frontend Setup
+
+bash
+Copy
+cd frontend
+npm install
+npm run dev
+3. Backend Setup
+
+bash
+Copy
+cd backend
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+venv\Scripts\activate  # Windows
+pip install -r requirements.txt
+python manage.py runserver
+🔍 Why GraphQL Over DRF?
+Eliminated Over-fetching: Clients request exact data needs
+
+Single Endpoint: /graphql replaces multiple REST endpoints
+
+Strong Typing: Schema-first development with Graphene-Django
+
+Frontend Flexibility: Next.js seamlessly consumes GraphQL API
+
+🤝 Contributing
+PRs welcome! Please follow:
+
+Create feature branch: git checkout -b feat/your-feature
+
+Maintain consistent GraphQL schema design
+
+Test auth flows with HTTP-only cookies
+
+Update documentation accordingly
+
+Crafted with ❤️ by idarbandi
+📫 Contact: darbandidr99@gmail.com
+💼 Connect: LinkedIn Profile
+🐛 Report Issues: GitHub Issues
