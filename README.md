@@ -75,10 +75,3 @@ PRs welcome! Please follow:
 💼 **Connect**: [LinkedIn Profile](https://www.linkedin.com/in/amir-darbandi-72526b25b/)  
 🐛 **Report Issues**: [GitHub Issues](https://github.com/idarbandi/Dokoon-NextJS-GraphQL/issues)
 ```
-
-### Key Features of This Version:
-1. **Detailed Overview**: Explains the transition from DRF to GraphQL.
-2. **Tech Stack Badges**: Visual representation of tools used.
-3. **Installation Steps**: Clear and concise setup instructions.
-4. **Contribution Guide**: Easy-to-follow steps for contributors.
-5. **Contact Info**: Includes your GitHub, email, and LinkedIn.
